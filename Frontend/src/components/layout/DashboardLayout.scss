@@ -1,0 +1,35 @@
+.dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+    .dashboard-container {
+        display: flex;
+        flex: 1;
+        position: relative;
+    }
+
+    .dashboard-main {
+        flex: 1;
+        margin-left: 260px; // Width of sidebar
+        padding: 40px;
+        padding-top: calc(85px + 40px); // Header height + content padding
+        background-color: transparent;
+        transition: margin-left 0.3s ease;
+        min-height: calc(100vh - 85px); // Ensure it takes full height minus header
+    }
+
+    .footer {
+        margin-top: 0;
+        z-index: 100; // Above sidebar if needed, but flexbox should handle it
+        position: relative;
+    }
+}
+
+@media (max-width: 992px) {
+    .dashboard-layout {
+        .dashboard-main {
+            margin-left: 70px;
+        }
+    }
+}

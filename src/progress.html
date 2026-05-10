@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress - SkillBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="">
+    <header>
+        <h2 class="logo" onclick="location.href='index.html'" style="cursor: pointer;">Skill<span>Bridge</span></h2>
+        <nav class="navigation">
+            <a href="afterlogin/dashboard.html">Dashboard</a>
+            <a href="profile.html">Profile</a>
+            <a href="assessment.html">Assessment</a>
+            <a href="gap-analysis.html">Gap Analysis</a>
+            <a href="roadmap.html">Roadmap</a>
+            <button id="darkModeToggle" style="background:none; border:none; color:inherit; cursor:pointer; font-size:1.2em; margin:0 15px;">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="btnLogin-popup" onclick="logout()">Logout</button>
+        </nav>
+    </header>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('user');
+            alert('Logged out successfully');
+            window.location.href = 'index.html';
+        }
+
+        // Theme Toggle Logic
+        const toggleBtn = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        const updateThemeUI = (isDark) => {
+            body.classList.toggle('dark-mode', isDark);
+            if (toggleBtn) {
+                toggleBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            }
+        };
+
+        const savedTheme = localStorage.getItem('theme');
+        updateThemeUI(savedTheme === 'dark');
+
+        if (toggleBtn) toggleBtn.addEventListener('click', () => {
+            const isDark = body.classList.contains('dark-mode');
+            const newTheme = !isDark;
+            localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+            updateThemeUI(newTheme);
+        });
+    </script>
+
+    <div class="main-content" style="text-align: center; padding-top: 100px;">
+        <h1>Your Learning <span>Progress</span></h1>
+        <p>Keep track of your completed assessments and skills.</p>
+        
+        <div id="progress-list" style="max-width: 800px; margin: 20px auto; text-align: left; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+            <p>Loading progress...</p>
+        </div>
+    </div>
+
+    <script>
+        // Placeholder for fetching actual progress from backend
+        const progressList = document.getElementById('progress-list');
+        const user = JSON.parse(localStorage.getItem('user'));
+        
+        if (!user) {
+            progressList.innerHTML = '<p>Please login to see your progress.</p>';
+        } else {
+            progressList.innerHTML = '<p>You have started your journey! Complete assessments to see detailed stats here.</p>';
+        }
+    </script>
+</body>
+</html>

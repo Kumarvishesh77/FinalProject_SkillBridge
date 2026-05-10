@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <h2 class="logo">Skill<span>Bridge</span></h2>
+        <nav class="navigation">
+            <button id="darkModeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="btnLogin-popup">Login</button>
+            <button class="btnRegister-popup">Register</button>
+        </nav>
+    </header>
+
+ <div class="maincontainer">
+    <div class="main-content">
+        <h1>Welcome to <span>SkillBridge</span></h1>
+
+        <p>
+            SkillBridge connects learners with industry‑ready skills. Learn, grow, 
+            and bridge the gap between knowledge and real‑world opportunity.
+        </p>
+
+        <div class="cta-buttons">
+            <button class="start">Get Started</button>
+            <button class="secondary">Learn More</button>
+        </div>
+    </div>
+
+    <div class="main-image">
+        <img src="/img004.jpg" alt="Learning and skill development illustration">
+    </div>
+
+        
+</div>
+
+    <div class="wrapper">
+        <span class="icon-close">
+            <ion-icon name="close"></ion-icon>
+        </span>
+        <div class="form-box login">
+            <h2>Login</h2>
+            <form action="#">
+                <div class="input-box">
+                    <span class="icon"><ion-icon name="mail-outline"></ion-icon></span>
+                    <input type="email" placeholder=" " required>
+                    <label>Email <span class="required">*</span></label>
+                </div>
+                <div class="input-box">
+                    <span class="icon toggle-password"><ion-icon name="eye-off-outline"></ion-icon></span>
+                    <input type="password" class="password-input" placeholder=" " required>
+                    <label>Password <span class="required">*</span></label>
+                </div>
+                <div class="remember-forgot">
+                    <label><input type="checkbox">Remember me</label>
+                    <a href="#">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn">Login</button>
+                <div class="login-register">
+                    <p>Don't have an account?<a href="#" class="register-link">Register</a></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="form-box forgot-password">
+            <h2>Reset Password</h2>
+            <p class="description">Enter your registered email address and we'll send you a link to reset your password.</p>
+            <form action="#">
+                <div class="input-box">
+                    <span class="icon"><ion-icon name="mail-outline"></ion-icon></span>
+                    <input type="email" id="forgot-email" placeholder=" " required>
+                    <label>Email Address <span class="required">*</span></label>
+                </div>
+                <button type="submit" class="btn">Send Reset Link</button>
+                <div class="login-register">
+                    <p><a href="#" class="back-to-login">Back to Login</a></p>
+                </div>
+            </form>
+            <div id="forgot-error" class="error-message" style="display: none; color: #ef4444; font-size: 0.85em; text-align: center; margin-top: 10px;"></div>
+            <div id="forgot-message" class="success-message" style="display: none;"></div>
+        </div>
+
+        <div class="form-box register">
+            <h2>Registration</h2>
+            <form action="#">
+                <div class="input-box">
+                    <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
+                    <input type="text" id="reg-fullname" placeholder=" " required>
+                    <label>Full Name <span class="required">*</span></label>
+                </div>
+                <div class="input-box">
+                    <span class="icon"><ion-icon name="mail-outline"></ion-icon></span>
+                    <input type="email" id="reg-email" placeholder=" " required>
+                    <label>Email Address <span class="required">*</span></label>
+                </div>
+                <div class="input-box">
+                    <input type="number" id="reg-age" placeholder=" " required>
+                    <label>Age <span class="required">*</span></label>
+                </div>
+                <div class="input-box">
+                    <span class="icon"><ion-icon name="people-outline"></ion-icon></span>
+                    <select id="reg-gender" required>
+                        <option value="" disabled selected hidden></option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <label>Gender <span class="required">*</span></label>
+                </div>
+                <div class="input-box">
+                    <span class="icon toggle-password"><ion-icon name="eye-off-outline"></ion-icon></span>
+                    <input type="password" id="reg-password" class="password-input" placeholder=" " required>
+                    <label>Password <span class="required">*</span></label>
+                    <div class="input-helper">Only strong passwords accepted (min. 8 chars, A–Z, a–z, 0–9, @$!%)</div>
+                </div>
+                <div class="input-box">
+                    <span class="icon toggle-password"><ion-icon name="eye-off-outline"></ion-icon></span>
+                    <input type="password" id="reg-confirm-password" class="password-input" placeholder=" " required>
+                    <label>Confirm Password <span class="required">*</span></label>
+                </div>
+                <div class="remember-forgot">
+                    <label><input type="checkbox" required>I agree to the Terms & Conditions and Privacy Policy</label>
+                </div>
+                <button type="submit" class="btn">Register</button>
+                <div class="login-register">
+                    <p>Already have an account?<a href="#" class="login-link">Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Learn More Modal -->
+    <div class="wrapper learn-more-modal">
+        <span class="icon-close learn-more-close">
+            <ion-icon name="close"></ion-icon>
+        </span>
+        <div class="form-box">
+            <h2>Skill<span>Bridge</span> Overview</h2>
+            <div class="scroll-content">
+                <div class="content-section">
+                    <h3>Platform Purpose</h3>
+                    <p>SkillBridge helps you understand your current skill readiness and provides clear guidance toward your target role.</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3>How it Works</h3>
+                    <ul class="flow-list">
+                        <li><strong>Profile Creation:</strong> Capture your background, skills, and career goals.</li>
+                        <li><strong>Skill Assessment:</strong> Measure your current proficiency through structured evaluations.</li>
+                        <li><strong>Skill Gap Analysis:</strong> Identify strengths, improvement areas, and missing skills for your target role.</li>
+                        <li><strong>Personalized Roadmap:</strong> Follow a prioritized learning path to achieve your career objectives.</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>User Benefits</h3>
+                    <ul class="benefits-list">
+                        <li>Clear understanding of your skill readiness</li>
+                        <li>Visibility into strengths and improvement areas</li>
+                        <li>Role‑based skill gap insights</li>
+                        <li>Actionable guidance for learning and growth</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Who is it for?</h3>
+                    <div class="user-tags">
+                        <span>Students</span>
+                        <span>Beginners</span>
+                        <span>Professionals</span>
+                        <span>Career Switchers</span>
+                    </div>
+                </div>
+
+                <p style="text-align: center; font-size: 0.9em; color: var(--primary-btn); font-weight: 500; margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 15px;">
+                    Complete your profile to get started with skill assessment and gap analysis.
+                </p>
+            </div>
+        </div>
+    </div>
+<section class="features">
+    <div class="container">
+        <h2>Why Choose SkillBridge?</h2>
+
+        <div class="feature-grid">
+            <!-- Card 1 -->
+            <div class="feature-item">
+                <i class="fas fa-sitemap"></i>
+                <h3>Personalized Roadmaps</h3>
+                <p>Get a step-by-step guide to achieve your career goals.</p>
+                <a href="roadmap.html" class="feature-btn">Create Roadmap</a>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="feature-item">
+                <i class="fas fa-tasks"></i>
+                <h3>Skill Assessments</h3>
+                <p>Identify your strengths and weaknesses with our assessments.</p>
+                <a href="assessment.html" class="feature-btn">Start Assessment</a>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="feature-item">
+                <i class="fas fa-chart-line"></i>
+                <h3>Track Your Progress</h3>
+                <p>Monitor your growth and stay motivated on your journey.</p>
+                <a href="progress.html" class="feature-btn">View Progress</a>
+            </div>
+        </div>
+    </div>
+</section>
+    <script src="script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+
+ <footer>
+    <div class="endwraper">
+
+        <div class="footer-section">
+            <b>Links</b>
+            <ul>
+                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <b>Contact</b>
+            <ul>
+                <li><a href="mailto:skillbridge.support@mail.com">
+                    skillbridge.support@mail.com
+                </a></li>
+                <li><a href="tel:180010010">1800 100 10</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-credit">
+            All rights reserved &copy; 2026 copyright.
+        </div>
+
+    </div>
+</footer>
+
+</body>
+
+</html>

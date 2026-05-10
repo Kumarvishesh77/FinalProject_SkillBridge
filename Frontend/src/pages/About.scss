@@ -1,0 +1,48 @@
+.about-page {
+    padding: 80px 0;
+
+    .about-hero {
+        text-align: center;
+        margin-bottom: 80px;
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--heading-color);
+
+            span { color: var(--primary-btn); }
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: var(--para-color);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    }
+
+    .about-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+
+        .content-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 20px;
+
+            h3 {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+                color: var(--heading-color);
+            }
+
+            p {
+                font-size: 1.05rem;
+                color: var(--para-color);
+                line-height: 1.6;
+            }
+        }
+    }
+}

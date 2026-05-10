@@ -1,0 +1,119 @@
+.dashboard-page {
+    .dashboard-header {
+        margin-bottom: 40px;
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--heading-color);
+            margin-bottom: 10px;
+
+            span {
+                color: var(--primary-btn);
+            }
+        }
+
+        p {
+            color: var(--para-color);
+            font-size: 1.1rem;
+        }
+    }
+
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 50px;
+    }
+
+    .status-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        padding: 30px;
+        border-radius: 20px;
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow);
+
+        h3 {
+            font-size: 1rem;
+            color: var(--para-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .status-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-bottom: 10px;
+
+            &.warning { color: #f59e0b; }
+            &.info { color: var(--primary-btn); }
+            &.success { color: #10b981; }
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: var(--para-color);
+        }
+    }
+
+    .quick-actions {
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--heading-color);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .action-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            transition: 0.3s;
+
+            &:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--shadow);
+            }
+
+            .icon {
+                font-size: 2.5rem;
+                margin-bottom: 20px;
+            }
+
+            h3 {
+                font-size: 1.4rem;
+                margin-bottom: 10px;
+                color: var(--heading-color);
+            }
+
+            p {
+                color: var(--para-color);
+                margin-bottom: 25px;
+                line-height: 1.5;
+            }
+
+            .btn-action {
+                display: inline-block;
+                padding: 12px 25px;
+                background: var(--primary-btn);
+                color: #fff;
+                border-radius: 8px;
+                font-weight: 600;
+                transition: 0.3s;
+
+                &:hover {
+                    background: var(--accent);
+                }
+            }
+        }
+    }
+}
