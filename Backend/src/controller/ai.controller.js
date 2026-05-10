@@ -2,10 +2,6 @@
  * AI Question Generator Controller
  * Generates high-quality questions using Google Gemini AI with local fallback.
  */
-/**
- * AI Question Generator Controller
- * Generates high-quality questions using Google Gemini AI with local fallback.
- */
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const AnalysisReport = require("../models/analysisReport.model");
 const Profile = require("../models/profile.model");
@@ -134,7 +130,7 @@ async function generateAssessment(req, res) {
 }
 
 async function generateGapAnalysis(req, res) {
-    const { currentRole, targetRole, jobDescription, skills } = req.body;
+    const { currentRole, targetRole, jobDescription, skills, workDomain, totalExperience, currentDomain, resumeFileName } = req.body;
     const userId = req.user.id;
 
     if (!targetRole) {
@@ -148,52 +144,110 @@ async function generateGapAnalysis(req, res) {
 
         const genAIInstance = new GoogleGenerativeAI(apiKey);
         
+        console.log(`[AI Gap Analysis] Data - Skills: ${skills?.length}, Desc: ${jobDescription?.length} chars`);
+        
         const prompt = `
-            You are a Senior Career Strategy AI. Generate a comprehensive Skill Gap Analysis.
+            You are a Senior Career Strategy AI and Expert Technical Recruiter. 
+            Generate a high-quality, professional Skill Gap Analysis for a user transitioning to a target role.
             
-            Input Data:
+            USER PROFILE CONTEXT:
             - Current Role: ${currentRole || 'Not specified'}
+            - Work Domain: ${workDomain || currentDomain || 'Not specified'}
+            - Total Experience: ${totalExperience || 0} years
+            - User's Current Skills (Detailed): ${JSON.stringify(skills || [])}
+            - Resume Filename: ${resumeFileName || 'Not uploaded'}
+
+            TARGET GOAL:
             - Target Role: ${targetRole}
             - Target Job Description: ${jobDescription || 'Not specified'}
-            - User's Current Skills: ${JSON.stringify(skills || [])}
 
-            Task:
-            1. Calculate overall "matchScore", "resumeSelectionChance", and "skillCoverage" (0-100).
-            2. Categorize skills into "strengths", "weaknesses", and "moderates".
-            3. Provide detailed "radarData" comparing user's current level (0-100) vs required (0-100) for 6 key skills.
-            4. Create a "skillGap" list with required level, current level, and a percentage gap.
-            5. Provide a "resumeReport" with rating (0-100), items to add (missing), items to remove (exclude), and items to keep (perfect).
-            6. Generate a "generatedResumePreview" snippet (text only).
+            Your Goal:
+            Perform a DEEP analysis comparing the User's Profile Context against the Target Goal. 
+            1. Evaluate if their years of experience and domain background align with the target job description.
+            2. Identify gaps in their current skill set (levels: Beginner/Intermediate/Advanced/Expert).
+            3. Use the Resume Filename as a hint (assume the user has provided a resume) to give better feedback.
 
-            Format: STRICT VALID JSON ONLY.
-            Structure:
-            {
-                "matchScore": number,
-                "resumeSelectionChance": number,
-                "skillCoverage": number,
-                "strengths": { "items": string[], "count": number, "percentage": number },
-                "weaknesses": { "items": string[], "count": number, "percentage": number },
-                "moderates": { "items": string[], "count": number, "percentage": number },
-                "radarData": [{ "skill": string, "you": number, "required": number }],
-                "skillGap": [{ "skill": string, "required": string, "current": string, "gap": number }],
-                "resumeReport": {
-                    "rating": number,
-                    "missing": string[],
-                    "exclude": string[],
-                    "perfect": string[],
-                    "generatedResumePreview": string
-                }
-            }
+            Mandatory Sections (STRICT JSON):
+            1. matchScore (0-100): Weighted calculation based on role, domain, and skills.
+            2. resumeSelectionChance (0-100): Likelihood of passing an ATS/Recruiter screen.
+            3. skillCoverage (0-100): Percentage of core required skills present.
+            4. strengths, weaknesses, moderates:
+               - Categorize user's skills specifically for the target role.
+               - items: Array of strings.
+            5. radarData: Exactly 6 core technical skills for the "${targetRole}". 
+               - "you": Score (0-100) based on proficiency/experience.
+               - "required": The ideal score for this role.
+            6. skillGap: 4-6 specific skills needed. 
+               - Compare "required" level vs user's "current" level.
+               - "gap": Numerical value (0-100).
+            7. resumeReport:
+               - missing: Specific keywords, domain-specific projects, or certifications.
+               - exclude: Recommendations on what to remove.
+               - perfect: Highlighting the strongest alignment.
+               - generatedResumePreview: A professionally rewritten "Professional Summary" (70-100 words) that bridges their ${totalExperience} years of experience into the ${targetRole} role.
+
+            Format: STRICT VALID JSON ONLY. Do not include markdown code blocks.
+            Ensure all numbers are integers.
         `;
 
-        const model = genAIInstance.getGenerativeModel({ 
-            model: "gemini-2.5-flash", 
-            generationConfig: { maxOutputTokens: 3000, temperature: 0.2, response_mime_type: "application/json" } 
-        });
+        const modelNames = ["gemini-2.5-flash", "gemini-1.5-pro"];
+        let analysisData = null;
+        let lastError = null;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const analysisData = JSON.parse(response.text());
+        for (const modelName of modelNames) {
+            try {
+                console.log(`[AI Gap Analysis] Attempting with model: ${modelName}`);
+                const model = genAIInstance.getGenerativeModel({ 
+                    model: modelName, 
+                    generationConfig: { 
+                        maxOutputTokens: 4000, 
+                        temperature: 0.1, 
+                        response_mime_type: "application/json" 
+                    } 
+                });
+
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const responseText = response.text().trim();
+                
+                console.log(`[AI Gap Analysis] ${modelName} Response Length: ${responseText.length}`);
+                
+                const cleanText = responseText.replace(/^```json\n?/, "").replace(/\n?```$/, "").trim();
+                
+                if (!cleanText || cleanText.length < 100) {
+                    throw new Error(`AI (${modelName}) returned an suspiciously short response.`);
+                }
+
+                try {
+                    analysisData = JSON.parse(cleanText);
+                    
+                    // Critical validation and default values to prevent frontend crash
+                    if (analysisData) {
+                        analysisData.matchScore = analysisData.matchScore || 0;
+                        analysisData.resumeSelectionChance = analysisData.resumeSelectionChance || 0;
+                        analysisData.skillCoverage = analysisData.skillCoverage || 0;
+                        analysisData.strengths = analysisData.strengths || { items: [], count: 0, percentage: 0 };
+                        analysisData.weaknesses = analysisData.weaknesses || { items: [], count: 0, percentage: 0 };
+                        analysisData.moderates = analysisData.moderates || { items: [], count: 0, percentage: 0 };
+                        analysisData.radarData = Array.isArray(analysisData.radarData) ? analysisData.radarData : [];
+                        analysisData.skillGap = Array.isArray(analysisData.skillGap) ? analysisData.skillGap : [];
+                        analysisData.resumeReport = analysisData.resumeReport || { rating: 0, missing: [], exclude: [], perfect: [], generatedResumePreview: "" };
+                        
+                        break; // Success
+                    }
+                } catch (parseError) {
+                    console.error(`[AI Parse Error] Content:`, cleanText);
+                    throw parseError;
+                }
+            } catch (err) {
+                console.warn(`[AI] ${modelName} failed: ${err.message}`);
+                lastError = err;
+            }
+        }
+
+        if (!analysisData) {
+            throw lastError || new Error("All AI models failed to generate a valid report.");
+        }
 
         // Save to DB
         const report = new AnalysisReport({
@@ -206,7 +260,41 @@ async function generateGapAnalysis(req, res) {
         return res.status(200).json({ success: true, data: analysisData });
     } catch (error) {
         console.error("[AI Gap Analysis Error]:", error);
-        return res.status(500).json({ success: false, message: "AI Analysis failed.", error: error.message });
+        
+        // Fallback Mock Response for Production Resilience
+        const fallbackData = {
+            matchScore: 45,
+            resumeSelectionChance: 30,
+            skillCoverage: 50,
+            strengths: { items: ["General technical knowledge", "Communication skills"], count: 2, percentage: 20 },
+            weaknesses: { items: ["Domain-specific expertise", "Advanced tooling"], count: 2, percentage: 30 },
+            moderates: { items: ["Team collaboration", "Problem solving"], count: 2, percentage: 25 },
+            radarData: [
+                { skill: "Frontend", you: 40, required: 80 },
+                { skill: "Backend", you: 30, required: 75 },
+                { skill: "DevOps", you: 20, required: 70 },
+                { skill: "Soft Skills", you: 60, required: 80 },
+                { skill: "Architecture", you: 25, required: 85 },
+                { skill: "Security", you: 15, required: 70 }
+            ],
+            skillGap: [
+                { skill: "Target Role Specifics", required: "Advanced", current: "Beginner", gap: 60 }
+            ],
+            resumeReport: {
+                rating: 50,
+                missing: ["Professional portfolio link", "Recent project highlights"],
+                exclude: ["Outdated skill listings"],
+                perfect: ["Educational background", "Contact details"],
+                generatedResumePreview: "AI analysis failed to generate a preview. Please try again."
+            }
+        };
+
+        return res.status(200).json({ 
+            success: true, 
+            data: fallbackData, 
+            isFallback: true, 
+            errorMessage: error.message 
+        });
     }
 }
 
@@ -216,7 +304,7 @@ async function getLatestGapAnalysis(req, res) {
         const latestReport = await AnalysisReport.findOne({ userId }).sort({ createdAt: -1 });
         
         if (!latestReport) {
-            return res.status(404).json({ success: false, message: "No analysis report found." });
+            return res.status(200).json({ success: true, data: null });
         }
 
         return res.status(200).json({ success: true, data: latestReport });

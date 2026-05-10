@@ -80,7 +80,16 @@ export const GapAnalysisProvider = ({ children }) => {
                 currentRole: careerDetails.currentJobRole,
                 targetRole: careerDetails.targetJobRole,
                 jobDescription: careerDetails.jobDescription,
-                skills: skills.map(s => ({ name: s.skill, proficiency: s.level, experience: s.exp, confidence: s.confidence })),
+                skills: skills.map(s => ({ 
+                    name: s.skill, 
+                    proficiency: s.level, 
+                    experience: s.exp, 
+                    confidence: s.confidence 
+                })),
+                // Full context from profile
+                workDomain: profile?.workDomain,
+                totalExperience: profile?.totalExperience,
+                currentDomain: profile?.currentDomain,
                 resumeFileName: resumeFile?.name || null
             });
             setAnalysisData(data);

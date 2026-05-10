@@ -26,10 +26,18 @@ export const OutputView = () => {
         setTimeout(() => { setGeneratingResume(false); setResumeReady(true); }, 2800);
     };
 
+    // Defensive data extraction
+    const strengths = analysisData.strengths || { items: [], count: 0, percentage: 0 };
+    const moderates = analysisData.moderates || { items: [], count: 0, percentage: 0 };
+    const weaknesses = analysisData.weaknesses || { items: [], count: 0, percentage: 0 };
+    const radarData = Array.isArray(analysisData.radarData) ? analysisData.radarData : [];
+    const skillGap = Array.isArray(analysisData.skillGap) ? analysisData.skillGap : [];
+    const resumeReport = analysisData.resumeReport || { rating: 0, missing: [], exclude: [], perfect: [], generatedResumePreview: "" };
+
     const PIE_DATA = [
-        { name: "Strong Areas",   value: analysisData.strengths.percentage,  color: T.green },
-        { name: "Moderate Areas", value: analysisData.moderates.percentage,   color: T.amber },
-        { name: "Weak Areas",     value: analysisData.weaknesses.percentage,  color: T.red   },
+        { name: "Strong Areas",   value: strengths.percentage || 0,  color: T.green },
+        { name: "Moderate Areas", value: moderates.percentage || 0,   color: T.amber },
+        { name: "Weak Areas",     value: weaknesses.percentage || 0,  color: T.red   },
     ];
 
     return (
@@ -58,9 +66,9 @@ export const OutputView = () => {
             {/* Score Cards Row */}
             <div className="fade-up-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
                 {[
-                    { label: "Job Match Score",         score: analysisData.matchScore,             color: T.amber,  sub: "Moderate fit"                    },
-                    { label: "Resume Selection Chance",  score: analysisData.resumeSelectionChance,  color: T.red,    sub: "Below average"                   },
-                    { label: "Skill Coverage",           score: analysisData.skillCoverage,          color: T.accent, sub: `${analysisData.skillGap.length} skills compared` },
+                    { label: "Job Match Score",         score: analysisData.matchScore || 0,             color: T.amber,  sub: "AI calculated fit"                    },
+                    { label: "Resume Selection Chance",  score: analysisData.resumeSelectionChance || 0,  color: T.red,    sub: "ATS visibility score"                   },
+                    { label: "Skill Coverage",           score: analysisData.skillCoverage || 0,          color: T.accent, sub: `${skillGap.length} skills compared` },
                 ].map((s, i) => (
                     <Card key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                         <ScoreRing score={s.score} color={s.color} size={120} />
@@ -96,7 +104,7 @@ export const OutputView = () => {
                         <Card>
                             <SectionLabel accent={T.purple}>Skill Radar — You vs Required</SectionLabel>
                             <ResponsiveContainer width="100%" height={240}>
-                                <RadarChart data={analysisData.radarData}>
+                                <RadarChart data={radarData}>
                                     <PolarGrid stroke="var(--glass-border)" />
                                     <PolarAngleAxis dataKey="skill" tick={{ fill: "var(--para-color)", fontSize: 11, fontFamily: "monospace" }} />
                                     <Radar name="Your Level" dataKey="you" stroke={T.accent} fill={T.accent} fillOpacity={0.2} />
@@ -131,16 +139,16 @@ export const OutputView = () => {
                         <SectionLabel>Strength vs Weakness Comparison</SectionLabel>
                         <div className="gap-comparison-grid">
                             {[
-                                { title: "✅ Strong Areas", items: analysisData.strengths.items, color: T.green },
-                                { title: "⚠️ Moderate", items: analysisData.moderates.items, color: T.amber },
-                                { title: "❌ Weak Areas", items: analysisData.weaknesses.items, color: T.red },
+                                { title: "✅ Strong Areas", items: strengths.items || [], color: T.green },
+                                { title: "⚠️ Moderate", items: moderates.items || [], color: T.amber },
+                                { title: "❌ Weak Areas", items: weaknesses.items || [], color: T.red },
                             ].map((col, i) => (
                                 <div key={i} className="gap-comparison-col">
                                     <div style={{ background: col.color + "15", padding: "10px 16px", fontSize: 12, fontWeight: 700, color: col.color, fontFamily: "monospace", borderBottom: `1px solid var(--glass-border)` }}>
                                         {col.title}
                                     </div>
-                                    {col.items.map((item, j) => (
-                                        <div key={j} style={{ padding: "10px 16px", fontSize: 13, color: 'var(--text-main)', borderBottom: j < col.items.length - 1 ? `1px solid var(--glass-border)` : "none" }}>
+                                    {(col.items || []).map((item, j) => (
+                                        <div key={j} style={{ padding: "10px 16px", fontSize: 13, color: 'var(--text-main)', borderBottom: j < (col.items?.length || 0) - 1 ? `1px solid var(--glass-border)` : "none" }}>
                                             <span style={{ color: col.color, marginRight: 8 }}>•</span>{item}
                                         </div>
                                     ))}
@@ -166,14 +174,14 @@ export const OutputView = () => {
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                     {/* Resume Score */}
                     <Card style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                        <ScoreRing score={analysisData.resumeReport.rating} color={T.amber} size={130} label="Resume Quality Score" />
+                        <ScoreRing score={resumeReport.rating || 0} color={T.amber} size={130} label="Resume Quality Score" />
                         <div style={{ flex: 1 }}>
                             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 6 }}>
                                 Your resume needs <span style={{ color: T.amber }}>some improvements</span>
                             </div>
                             <p style={{ color: 'var(--para-color)', fontSize: 13, lineHeight: 1.7 }}>
-                                Overall structure is good, but key DevOps-specific elements are missing.
-                                Adding quantified metrics and cloud certifications could push selection chance from 38% → 65%+.
+                                AI has analyzed your resume against the target role requirements.
+                                Review the sections below to see what to add, remove, or keep.
                             </p>
                         </div>
                     </Card>
@@ -181,18 +189,18 @@ export const OutputView = () => {
                     {/* Three columns */}
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
                         {[
-                            { title: "🔴 Missing — Add These", items: analysisData.resumeReport.missing, color: T.red },
-                            { title: "🟡 Exclude — Remove These", items: analysisData.resumeReport.exclude, color: T.amber },
-                            { title: "🟢 Perfect — Keep These", items: analysisData.resumeReport.perfect, color: T.green },
+                            { title: "🔴 Missing — Add These", items: resumeReport.missing || [], color: T.red },
+                            { title: "🟡 Exclude — Remove These", items: resumeReport.exclude || [], color: T.amber },
+                            { title: "🟢 Perfect — Keep These", items: resumeReport.perfect || [], color: T.green },
                         ].map((col, i) => (
                             <Card key={i} style={{ padding: "20px" }}>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: col.color, fontFamily: "monospace", marginBottom: 14, letterSpacing: 0.3 }}>
                                     {col.title}
                                 </div>
-                                {col.items.map((item, j) => (
+                                {(col.items || []).map((item, j) => (
                                     <div key={j} style={{
                                         display: "flex", gap: 8, alignItems: "flex-start",
-                                        padding: "8px 0", borderBottom: j < col.items.length - 1 ? `1px solid var(--glass-border)` : "none",
+                                        padding: "8px 0", borderBottom: j < (col.items?.length || 0) - 1 ? `1px solid var(--glass-border)` : "none",
                                     }}>
                                         <span style={{ color: col.color, flexShrink: 0, marginTop: 1 }}>
                                             {col.color === T.red ? "＋" : col.color === T.amber ? "−" : "✓"}
@@ -248,7 +256,7 @@ export const OutputView = () => {
                                     fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: 'var(--para-color)',
                                     lineHeight: 1.8, border: `1px solid var(--glass-border)`, whiteSpace: "pre-wrap",
                                 }}>
-                                    {analysisData.resumeReport.generatedResumePreview}
+                                    {resumeReport.generatedResumePreview}
                                 </div>
                             </div>
                         )}
@@ -272,7 +280,7 @@ export const OutputView = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {analysisData.skillGap.map((row, i) => (
+                                    {skillGap.map((row, i) => (
                                         <tr key={i} className="skill-row">
                                             <td>
                                                 <span style={{ fontWeight: 600, color: row.gap > 50 ? T.red : 'var(--text-main)' }}>{row.skill}</span>
