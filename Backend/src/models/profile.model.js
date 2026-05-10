@@ -39,7 +39,9 @@ const profileSchema = new mongoose.Schema({
     // Skills details
     skills: [{
         name: { type: String },
-        proficiency: { type: String, enum: ["Beginner", "Intermediate", "Advanced", "Expert"] }
+        proficiency: { type: String, enum: ["Beginner", "Intermediate", "Advanced", "Expert"] },
+        experience: { type: String, default: "" },
+        confidence: { type: String, enum: ["Low", "Medium", "High"], default: "Medium" }
     }],
     
     // Completion Logic

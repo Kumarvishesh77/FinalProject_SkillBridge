@@ -2,8 +2,13 @@
  * AI Question Generator Controller
  * Generates high-quality questions using Google Gemini AI with local fallback.
  */
+/**
+ * AI Question Generator Controller
+ * Generates high-quality questions using Google Gemini AI with local fallback.
+ */
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const localQuestions = require("../data/localQuestions");
+const AnalysisReport = require("../models/analysisReport.model");
+const Profile = require("../models/profile.model");
 
 function handleFallback(skill, level, res, originalError) {
     console.error(`[AI CRITICAL ERROR] Failed to generate dynamic assessment for ${skill}. Reason: ${originalError}`);
@@ -88,7 +93,7 @@ async function generateAssessment(req, res) {
             }
         `;
 
-        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro"];
+        const modelNames = ["gemini-2.5-flash", "gemini-1.5-pro"];
         let result;
         let lastError;
 
@@ -129,104 +134,105 @@ async function generateAssessment(req, res) {
 }
 
 async function generateGapAnalysis(req, res) {
-    const { currentRole, targetRole, userSkills, userAssessments } = req.body;
+    const { currentRole, targetRole, jobDescription, skills } = req.body;
+    const userId = req.user.id;
 
     if (!targetRole) {
         return res.status(400).json({ success: false, message: "Target role is required." });
     }
 
     try {
-        console.log(`[AI Gap Analysis] Request: TargetRole=${targetRole}`);
+        console.log(`[AI Gap Analysis] Request for User ${userId}, TargetRole=${targetRole}`);
         const apiKey = process.env.GOOGLE_GENAI_API_KEY;
         if (!apiKey || apiKey === "dummy_key") throw new Error("Missing API Key");
 
         const genAIInstance = new GoogleGenerativeAI(apiKey);
-        const passedAssessments = (userAssessments || []).filter(a => a.passed);
         
         const prompt = `
-            You are an expert career counselor. Generate a precise Skill Gap Analysis focusing on PROGRESSION to reach the "${targetRole}".
-            Input Data: User's Background: ${currentRole || 'Not specified'}, Target Role: ${targetRole}, Passed Assessments: ${JSON.stringify(passedAssessments)}, Profile Skills: ${JSON.stringify(userSkills || [])}
-
-            Mandatory Logic:
-            1. Identify core skills for "${targetRole}" across Beginner, Intermediate, and Advanced levels.
-            2. Compare these against user's passed assessments.
-            3. Classification: "Strength": Level cleared. "Needs Improvement": Lower level cleared, need NEXT level. "Missing Skill": Not yet assessed.
+            You are a Senior Career Strategy AI. Generate a comprehensive Skill Gap Analysis.
             
-            Output Format:
+            Input Data:
+            - Current Role: ${currentRole || 'Not specified'}
+            - Target Role: ${targetRole}
+            - Target Job Description: ${jobDescription || 'Not specified'}
+            - User's Current Skills: ${JSON.stringify(skills || [])}
+
+            Task:
+            1. Calculate overall "matchScore", "resumeSelectionChance", and "skillCoverage" (0-100).
+            2. Categorize skills into "strengths", "weaknesses", and "moderates".
+            3. Provide detailed "radarData" comparing user's current level (0-100) vs required (0-100) for 6 key skills.
+            4. Create a "skillGap" list with required level, current level, and a percentage gap.
+            5. Provide a "resumeReport" with rating (0-100), items to add (missing), items to remove (exclude), and items to keep (perfect).
+            6. Generate a "generatedResumePreview" snippet (text only).
+
+            Format: STRICT VALID JSON ONLY.
+            Structure:
             {
-                "completedLevel": "Highest milestone reached",
-                "nextLevelTarget": "Immediate next milestone",
-                "strengths": [{"name": "Skill Name", "level": "Mastered", "target": "Required"}],
-                "skillGaps": [{"name": "Skill Name", "level": "Current", "target": "Next", "type": "Needs Improvement"}],
-                "keyAreasForImprovement": ["Point 1", "Point 2", "Point 3"],
-                "improvementSummary": "Professional guidance summary."
+                "matchScore": number,
+                "resumeSelectionChance": number,
+                "skillCoverage": number,
+                "strengths": { "items": string[], "count": number, "percentage": number },
+                "weaknesses": { "items": string[], "count": number, "percentage": number },
+                "moderates": { "items": string[], "count": number, "percentage": number },
+                "radarData": [{ "skill": string, "you": number, "required": number }],
+                "skillGap": [{ "skill": string, "required": string, "current": string, "gap": number }],
+                "resumeReport": {
+                    "rating": number,
+                    "missing": string[],
+                    "exclude": string[],
+                    "perfect": string[],
+                    "generatedResumePreview": string
+                }
             }
-            Output strictly valid JSON.
         `;
 
-        const modelNames = ["gemini-2.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
-        let result;
-        let lastError;
+        const model = genAIInstance.getGenerativeModel({ 
+            model: "gemini-2.5-flash", 
+            generationConfig: { maxOutputTokens: 3000, temperature: 0.2, response_mime_type: "application/json" } 
+        });
 
-        for (const modelName of modelNames) {
-            try {
-                console.log(`[AI Gap Analysis] Attempting with model: ${modelName}`);
-                const model = genAIInstance.getGenerativeModel({ model: modelName, generationConfig: { maxOutputTokens: 2048, temperature: 0.1 } });
-                const aiPromise = model.generateContent(prompt);
-                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("AI Timeout")), 15000));
-                result = await Promise.race([aiPromise, timeoutPromise]);
-                if (result) break;
-            } catch (err) { lastError = err; }
-        }
-
-        if (!result) throw lastError || new Error("Gap analysis failed");
-
+        const result = await model.generateContent(prompt);
         const response = await result.response;
-        const responseText = response.text().trim();
-        const cleanText = responseText.replace(/^```json\n?/, "").replace(/\n?```$/, "").trim();
-        const analysisData = JSON.parse(cleanText);
+        const analysisData = JSON.parse(response.text());
+
+        // Save to DB
+        const report = new AnalysisReport({
+            userId,
+            targetRole,
+            ...analysisData
+        });
+        await report.save();
 
         return res.status(200).json({ success: true, data: analysisData });
     } catch (error) {
-        console.error("[AI Gap Analysis Error]:", error.message);
-        return handleGapAnalysisFallback(targetRole, userSkills, userAssessments, res);
+        console.error("[AI Gap Analysis Error]:", error);
+        return res.status(500).json({ success: false, message: "AI Analysis failed.", error: error.message });
     }
 }
 
-function handleGapAnalysisFallback(targetRole, userSkills, userAssessments, res) {
-    const roleReqs = {
-        "Frontend Developer": { "HTML": "Advanced", "CSS": "Advanced", "JavaScript": "Intermediate", "React": "Intermediate", "Git": "Beginner" },
-        "Backend Developer": { "Python": "Advanced", "Node.js": "Intermediate", "SQL": "Intermediate", "Git": "Intermediate", "REST API": "Advanced" },
-        "QA Engineer": { "Manual Testing": "Advanced", "Selenium": "Intermediate", "JavaScript": "Beginner", "SQL": "Beginner" }
-    };
-    
-    let requirements = roleReqs[targetRole] || { "Technical Communication": "Intermediate", "Problem Solving": "Advanced" };
-    const levels = ["None", "Beginner", "Intermediate", "Advanced"];
-    const strengths = [];
-    const skillGaps = [];
-    const userSkillsMap = {};
-
-    if (userSkills) userSkills.forEach(s => userSkillsMap[(s.name || s).toLowerCase()] = s.proficiency || "Intermediate");
-    if (userAssessments) userAssessments.forEach(a => { if (a.passed) userSkillsMap[a.skill.toLowerCase()] = a.level; });
-
-    for (const [reqSkill, reqLevel] of Object.entries(requirements)) {
-        const userLevel = userSkillsMap[reqSkill.toLowerCase()] || "None";
-        if (levels.indexOf(userLevel) >= levels.indexOf(reqLevel)) strengths.push({ name: reqSkill, level: userLevel, target: reqLevel });
-        else skillGaps.push({ name: reqSkill, level: userLevel, target: reqLevel, type: userLevel === "None" ? "Missing Skill" : "Needs Improvement" });
-    }
-
-    return res.status(200).json({
-        success: true,
-        data: { 
-            completedLevel: "Assessment Phase Active",
-            nextLevelTarget: `Path to ${targetRole} Mastery`,
-            strengths, 
-            skillGaps, 
-            keyAreasForImprovement: [`Master the core competencies required for ${targetRole}.`, "Complete technical assessments.", "Bridge theoretical knowledge gaps."],
-            improvementSummary: `To reach the ${targetRole} level, leverage your strengths while closing identified gaps.`, 
-            isFallback: true 
+async function getLatestGapAnalysis(req, res) {
+    try {
+        const userId = req.user.id;
+        const latestReport = await AnalysisReport.findOne({ userId }).sort({ createdAt: -1 });
+        
+        if (!latestReport) {
+            return res.status(404).json({ success: false, message: "No analysis report found." });
         }
-    });
+
+        return res.status(200).json({ success: true, data: latestReport });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to fetch report." });
+    }
 }
 
-module.exports = { generateAssessment, generateGapAnalysis };
+async function deleteGapAnalysis(req, res) {
+    try {
+        const userId = req.user.id;
+        await AnalysisReport.deleteMany({ userId });
+        return res.status(200).json({ success: true, message: "Reports deleted." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to delete reports." });
+    }
+}
+
+module.exports = { generateAssessment, generateGapAnalysis, getLatestGapAnalysis, deleteGapAnalysis };

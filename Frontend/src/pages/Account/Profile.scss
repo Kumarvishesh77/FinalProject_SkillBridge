@@ -130,64 +130,121 @@
 }
 
 .career-page {
-    .skills-manager {
-        .add-skill-box {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(0,0,0,0.02);
-            border-radius: 15px;
-            border: 1px dashed var(--glass-border);
+    .section-header {
+        .btn-add-skill {
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: 0.3s;
+            &:hover { background: #10b981; color: #fff; }
+        }
+    }
 
-            input { flex: 2; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border); }
-            select { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border); }
-            .btn-add {
-                padding: 0 25px;
-                background: var(--primary-btn);
-                color: #fff;
-                border: none;
-                border-radius: 8px;
-                font-weight: 600;
-                &:hover { background: var(--accent); }
-            }
+    .skills-manager {
+        margin-top: 20px;
+
+        .table-input, .table-select {
+            padding: 8px 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            color: var(--input-text);
+            width: 100%;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+            &:focus { border-color: var(--primary-btn); outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
         }
 
         .skills-table-container {
-            overflow-x: auto;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.01);
+            margin-top: 15px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .skills-table {
             width: 100%;
-            border-collapse: collapse;
-            text-align: left;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.95rem;
 
-            th { padding: 15px; color: var(--para-color); font-size: 0.85rem; text-transform: uppercase; border-bottom: 2px solid var(--glass-border); }
-            td { padding: 15px; border-bottom: 1px solid var(--glass-border); color: var(--text-main); }
+            th { 
+                padding: 16px 20px; 
+                color: var(--para-color); 
+                font-size: 0.7rem; 
+                text-transform: uppercase; 
+                letter-spacing: 1.2px;
+                font-weight: 700;
+                border-bottom: 2px solid var(--glass-border);
+                background: rgba(0, 0, 0, 0.03);
+                text-align: left;
+                &:first-child { padding-left: 24px; }
+                &:last-child { padding-right: 24px; text-align: right; }
+            }
 
-            .proficiency-badge {
-                padding: 4px 12px;
-                border-radius: 20px;
+            td { 
+                padding: 18px 20px; 
+                border-bottom: 1px solid var(--glass-border); 
+                color: var(--text-main); 
+                vertical-align: middle;
+                &:first-child { padding-left: 24px; }
+                &:last-child { padding-right: 24px; text-align: right; }
+            }
+
+            tr:last-child td { border-bottom: none; }
+            tr:hover td { background: rgba(59, 130, 246, 0.02); }
+
+            .skill-name-text { font-weight: 600; color: var(--heading-color); font-size: 1rem; }
+            .text-muted { color: var(--para-color); font-size: 0.9rem; font-weight: 400; }
+            
+            .skill-actions, .add-actions {
+                display: flex;
+                gap: 8px;
+                justify-content: flex-end;
+            }
+
+            .btn-edit-sm, .btn-save-sm, .btn-delete-sm, .btn-confirm-add, .btn-cancel-add {
+                padding: 6px 14px;
+                border-radius: 6px;
                 font-size: 0.8rem;
                 font-weight: 600;
-                &.beginner { background: #e0f2fe; color: #0369a1; }
-                &.intermediate { background: #fef3c7; color: #b45309; }
-                &.advanced { background: #dcfce7; color: #15803d; }
-                &.expert { background: #f3e8ff; color: #7e22ce; }
+                cursor: pointer;
+                transition: all 0.2s;
+                white-space: nowrap;
             }
 
-            .btn-delete {
-                background: transparent;
-                color: #ef4444;
-                border: 1px solid #ef4444;
-                padding: 6px 12px;
-                border-radius: 6px;
-                font-size: 0.85rem;
-                transition: 0.3s;
-                &:hover { background: #ef4444; color: #fff; }
+            .btn-edit-sm { 
+                background: transparent; 
+                color: var(--primary-btn); 
+                border: 1px solid var(--primary-btn); 
+                &:hover { background: var(--primary-btn); color: #fff; } 
             }
+            .btn-save-sm { background: #10b981; color: #fff; border: none; &:hover { background: #059669; transform: translateY(-1px); } }
+            .btn-delete-sm { 
+                background: transparent; 
+                color: #ef4444; 
+                border: 1px solid #ef4444; 
+                &:hover { background: #ef4444; color: #fff; } 
+            }
+            .btn-confirm-add { background: var(--primary-btn); color: #fff; border: none; &:hover { background: var(--accent); transform: translateY(-1px); } }
+            .btn-cancel-add { background: transparent; color: var(--para-color); border: 1px solid var(--glass-border); &:hover { background: rgba(0,0,0,0.05); } }
+        }
 
-            .empty-row { text-align: center; color: #94a3b8; padding: 40px; }
+        .adding-row {
+            background: rgba(59, 130, 246, 0.03);
+            td { border-bottom: 2px solid var(--primary-btn); }
+        }
+        
+        .empty-row {
+            text-align: center;
+            color: var(--para-color);
+            padding: 40px !important;
+            font-style: italic;
         }
     }
 }
