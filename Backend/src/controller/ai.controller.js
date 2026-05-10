@@ -154,40 +154,36 @@ async function generateGapAnalysis(req, res) {
             - Current Role: ${currentRole || 'Not specified'}
             - Work Domain: ${workDomain || currentDomain || 'Not specified'}
             - Total Experience: ${totalExperience || 0} years
-            - User's Current Skills (Detailed): ${JSON.stringify(skills || [])}
+            - User's Current Skills (Confirmed): ${JSON.stringify(skills || [])}
             - Resume Filename: ${resumeFileName || 'Not uploaded'}
 
             TARGET GOAL:
             - Target Role: ${targetRole}
             - Target Job Description: ${jobDescription || 'Not specified'}
 
-            Your Goal:
-            Perform a DEEP analysis comparing the User's Profile Context against the Target Goal. 
-            1. Evaluate if their years of experience and domain background align with the target job description.
-            2. Identify gaps in their current skill set (levels: Beginner/Intermediate/Advanced/Expert).
-            3. Use the Resume Filename as a hint (assume the user has provided a resume) to give better feedback.
+            INSTRUCTIONS:
+            1. RECONCILIATION: Prioritize User's Current Skills (Confirmed) as the ground truth. If the Resume Filename is present, assume the user's resume contains these same skills plus additional context.
+            2. ENUM ENFORCEMENT: All "level" fields (required, current) MUST strictly use one of: "Basic", "Intermediate", "Advanced", or "Expert". DO NOT use descriptive text like "familiarity" or "some knowledge".
+            3. RADAR DATA: You MUST provide exactly 6 core technical skills relevant to the "${targetRole}". 
+            4. SCORES: Ensure matchScore and resumeReport.rating are realistic but never 0 unless the input is completely empty.
 
             Mandatory Sections (STRICT JSON):
-            1. matchScore (0-100): Weighted calculation based on role, domain, and skills.
-            2. resumeSelectionChance (0-100): Likelihood of passing an ATS/Recruiter screen.
-            3. skillCoverage (0-100): Percentage of core required skills present.
+            1. matchScore (0-100): Integer.
+            2. resumeSelectionChance (0-100): Integer.
+            3. skillCoverage (0-100): Integer.
             4. strengths, weaknesses, moderates:
-               - Categorize user's skills specifically for the target role.
-               - items: Array of strings.
-            5. radarData: Exactly 6 core technical skills for the "${targetRole}". 
-               - "you": Score (0-100) based on proficiency/experience.
-               - "required": The ideal score for this role.
-            6. skillGap: 4-6 specific skills needed. 
-               - Compare "required" level vs user's "current" level.
+               - Categorize confirmed skills based on their relevance to the "${targetRole}".
+            5. radarData: Exactly 6 objects. Score (0-100) for "you" vs "required".
+            6. skillGap: 4-6 specific technical skills.
+               - "required": MUST BE "Basic", "Intermediate", "Advanced", or "Expert".
+               - "current": MUST BE "Basic", "Intermediate", "Advanced", "Expert", or "None".
                - "gap": Numerical value (0-100).
             7. resumeReport:
-               - missing: Specific keywords, domain-specific projects, or certifications.
-               - exclude: Recommendations on what to remove.
-               - perfect: Highlighting the strongest alignment.
-               - generatedResumePreview: A professionally rewritten "Professional Summary" (70-100 words) that bridges their ${totalExperience} years of experience into the ${targetRole} role.
+               - rating: (0-100) Integer.
+               - missing, exclude, perfect: Arrays of strings.
+               - generatedResumePreview: A professionally rewritten "Professional Summary" (70-100 words) tailored for ${targetRole}.
 
             Format: STRICT VALID JSON ONLY. Do not include markdown code blocks.
-            Ensure all numbers are integers.
         `;
 
         const modelNames = ["gemini-2.5-flash", "gemini-1.5-pro"];

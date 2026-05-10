@@ -1,0 +1,87 @@
+{
+
+  "assessmentId": "A101",
+
+  "skillName": "CI/CD",
+
+  "estimatedLevel": "Intermediate",
+
+ 
+
+  "questions": [
+
+    {
+
+      "id": "Q1",
+
+      "type": "mcq",
+
+      "difficulty": "Basic",
+
+      "question": "Which tool is commonly used for CI?",
+
+      "options": ["Jenkins", "Figma", "Photoshop", "MongoDB"]
+
+    },
+
+ 
+
+    {
+
+      "id": "Q2",
+
+      "type": "descriptive",
+
+      "difficulty": "Intermediate",
+
+      "question": "Explain CI vs CD."
+
+    },
+
+ 
+
+    {
+
+      "id": "Q3",
+
+      "type": "coding",
+
+      "difficulty": "Intermediate",
+
+      "question": "Write a GitHub Actions workflow for npm test."
+
+    },
+
+ 
+
+    {
+
+      "id": "Q4",
+
+      "type": "fillup",
+
+      "difficulty": "Basic",
+
+      "question": "Docker images are built using ______."
+
+    },
+
+ 
+
+    {
+
+      "id": "Q5",
+
+      "type": "case-study",
+
+      "difficulty": "Advanced",
+
+      "scenario": "Production deployment failed after merge.",
+
+      "question": "How will you debug and recover the system?"
+
+    }
+
+  ]
+
+}

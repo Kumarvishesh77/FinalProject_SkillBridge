@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const AuthRoutes = require("./routes/auth.routes");
 const AiRoutes = require("./routes/ai.routes");
 const ProfileRoutes = require("./routes/profile.routes");
+const AssessmentRoutes = require("./routes/assessment.routes");
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.use((req, res, next) => {
 app.use("/api/auth", AuthRoutes);
 app.use("/api/ai", AiRoutes);
 app.use("/api/profile", ProfileRoutes);
+app.use("/api/assessment", AssessmentRoutes);
 
 // Fallback for SPA routing and 404s
 app.use((req, res) => {

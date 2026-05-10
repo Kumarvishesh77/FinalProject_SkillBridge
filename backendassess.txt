@@ -1,0 +1,309 @@
+Create backend architecture for an AI-powered Assessment System using Node.js, Express.js and MongoDB.
+
+ 
+
+IMPORTANT:
+
+- Backend only
+
+- Clean scalable architecture
+
+- Use MVC pattern
+
+- Use Mongoose
+
+- JWT auth ready
+
+- AI service layer separated
+
+- Do NOT create frontend
+
+ 
+
+====================================
+
+ 
+
+ASSESSMENT TYPES
+
+ 
+
+1. Overall Proficiency
+
+   - Technical
+
+   - Behavioral
+
+ 
+
+2. Particular Skill Assessment
+
+   - React
+
+   - Node.js
+
+   - Docker
+
+   - CI/CD
+
+   etc.
+
+ 
+
+====================================
+
+ 
+
+ASSESSMENT FLOW
+
+ 
+
+If user selects "Unsure":
+
+- Start from Basic level
+
+- Generate 5 questions
+
+- Evaluate answers
+
+- If score > 50% increase difficulty
+
+- Basic → Intermediate → Advanced
+
+- Stop when score drops below threshold
+
+- Detect verified skill level automatically
+
+ 
+
+If user selects fixed level:
+
+- Generate 10-15 questions directly for that level
+
+ 
+
+Question Types:
+
+- MCQ
+
+- Descriptive
+
+- Coding
+
+- Fill Up
+
+- Case Study
+
+ 
+
+====================================
+
+ 
+
+IMPORTANT STORAGE LOGIC
+
+ 
+
+Do NOT store:
+
+- all questions
+
+- all answers
+
+- temporary AI feedback
+
+ 
+
+Questions and answers should remain temporary in frontend state/backend memory only.
+
+ 
+
+Store ONLY final assessment analytics in MongoDB.
+
+ 
+
+====================================
+
+ 
+
+CREATE MONGOOSE MODELS
+
+ 
+
+Assessment:
+
+- userId
+
+- type
+
+- skillName
+
+- selectedLevel
+
+- verifiedLevel
+
+- score
+
+- status
+
+- createdAt
+
+ 
+
+Result:
+
+- assessmentId
+
+- strengths
+
+- weaknesses
+
+- confidenceAlignment
+
+- skillGap
+
+- finalScore
+
+- summary
+
+ 
+
+====================================
+
+ 
+
+CREATE APIs
+
+ 
+
+POST /assessment/start
+
+- create assessment session
+
+- generate first batch questions
+
+ 
+
+POST /assessment/submit-batch
+
+- receive batch answers
+
+- evaluate using AI
+
+- calculate score
+
+- decide continue/stop
+
+- generate next batch if needed
+
+ 
+
+POST /assessment/finish
+
+- generate final report
+
+- save final analytics only
+
+ 
+
+GET /assessment/result/:id
+
+ 
+
+GET /assessment/history/:userId
+
+ 
+
+====================================
+
+ 
+
+BACKEND FLOW
+
+ 
+
+Start Assessment
+
+→ Generate 5 Questions
+
+→ Frontend stores answers temporarily
+
+→ Submit Batch
+
+→ AI Evaluation
+
+→ Increase Difficulty or Stop
+
+→ Generate Final Report
+
+→ Save Final Analytics
+
+ 
+
+====================================
+
+ 
+
+FOLDER STRUCTURE
+
+ 
+
+backend/
+
+├── controllers/
+
+├── routes/
+
+├── models/
+
+├── services/
+
+├── ai/
+
+├── middleware/
+
+├── utils/
+
+└── config/
+
+ 
+
+====================================
+
+ 
+
+AI SERVICE FILES
+
+ 
+
+ai/
+
+├── generateQuestions.js
+
+├── evaluateAnswers.js
+
+├── detectSkillLevel.js
+
+├── generateFeedback.js
+
+└── generateSkillGap.js
+
+ 
+
+====================================
+
+ 
+
+IMPORTANT
+
+ 
+
+- Use async/await
+
+- Proper error handling
+
+- Structured JSON responses
+
+- Modular reusable services
+
+- Prepare architecture for future OpenAI/Gemini integration

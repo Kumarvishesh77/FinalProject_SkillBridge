@@ -1,36 +1,39 @@
 const mongoose = require("mongoose");
 
 const assessmentSchema = new mongoose.Schema({
-    userName: {
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    type: {
+        type: String,
+        enum: ["Overall Proficiency", "Particular Skill Assessment"],
+        required: true
+    },
+    skillName: {
         type: String,
         required: true
     },
-    userEmail: {
+    selectedLevel: {
         type: String,
+        enum: ["Basic", "Intermediate", "Advanced", "Unsure"],
         required: true
     },
-    skill: {
+    verifiedLevel: {
         type: String,
-        required: true
-    },
-    level: {
-        type: String,
-        required: true
-    },
-    status: {
-        type: String,
-        enum: ["Started", "Completed"],
-        default: "Started"
+        default: "Pending"
     },
     score: {
         type: Number,
         default: 0
     },
-    passed: {
-        type: Boolean,
-        default: false
+    status: {
+        type: String,
+        enum: ["Started", "In Progress", "Completed"],
+        default: "Started"
     },
-    date: {
+    createdAt: {
         type: Date,
         default: Date.now
     }

@@ -1,0 +1,159 @@
+Create a modern futuristic Assessment Page frontend using React.js and SCSS.
+ 
+IMPORTANT:
+- Frontend only
+- Use SCSS modules or structured SCSS files
+- Use reusable React components
+- Use dummy/mock AI JSON responses
+- Do NOT create backend
+- Dark futuristic AI dashboard theme
+- Glassmorphism UI
+- Smooth animations
+- Responsive design
+ 
+Page Flow:
+1. Assessment Selection Page
+2. Assessment Setup Modal
+3. AI Loading Screen
+4. Live Assessment Session
+5. Result Dashboard
+ 
+===================================
+ 
+SECTION 1 → HERO
+ 
+Title:
+AI Skill Validation
+ 
+Subtitle:
+Validate real skills using adaptive AI assessments.
+ 
+===================================
+ 
+SECTION 2 → ASSESSMENT CARDS
+ 
+Create two large cards:
+ 
+1. Overall Proficiency Assessment
+- Technical Assessment
+- Behavioral Assessment
+- Start Button
+ 
+2. Skill Specific Assessment
+- Skill dropdown
+- Start Assessment button
+ 
+===================================
+ 
+SECTION 3 → SKILL TABLE
+ 
+Columns:
+- Skill Name
+- Self Rated Level
+- Verified Level
+- Action Button
+ 
+===================================
+ 
+SECTION 4 → ASSESSMENT SETUP MODAL
+ 
+Fields:
+- Selected Skill
+- Level:
+  Basic
+  Intermediate
+  Advanced
+  Unsure
+ 
+Buttons:
+- Begin Assessment
+- Cancel
+ 
+===================================
+ 
+SECTION 5 → AI LOADING SCREEN
+ 
+Animated AI loading steps:
+✓ Preparing Questions
+✓ Analyzing Skill
+✓ Generating Adaptive Flow
+ 
+===================================
+ 
+SECTION 6 → LIVE ASSESSMENT
+ 
+Sticky Header:
+- Skill Name
+- Question Count
+- Progress Bar
+- Estimated Level
+ 
+Support Question Types:
+1. Multiple Choice
+2. Descriptive
+3. Coding
+4. Fill Up
+5. Case Study
+ 
+Question Card:
+- Difficulty Badge
+- Question Type Badge
+- Modern glass card UI
+ 
+Navigation:
+- Previous
+- Save Draft
+- Next Question
+ 
+Add small AI status card:
+✓ Evaluating answers
+✓ Detecting confidence patterns
+✓ Tracking consistency
+ 
+===================================
+ 
+SECTION 7 → RESULT DASHBOARD
+ 
+Top Summary Cards:
+- Overall Score
+- Verified Level
+- Confidence Alignment
+- Strongest Area
+ 
+Add:
+- Radar Chart
+- Pie Chart
+- Skill Gap Table
+- Confidence Alignment Table
+- AI Feedback Cards
+ 
+Final Buttons:
+- Save Result
+- Generate Roadmap
+- Retake Assessment
+- Back to Dashboard
+ 
+===================================
+ 
+TECH STACK
+ 
+Use:
+- React.js
+- SCSS
+- Framer Motion
+- Recharts
+- Lucide React Icons
+ 
+Folder Structure:
+ 
+src/
+├── pages/
+├── components/
+├── styles/
+├── data/
+├── context/
+└── utils/
+ 
+Use local JSON mock data and simulate API delays using setTimeout
+
+:: @temp.txt - This file contains JSON Mock data check if it is in proper formatae or not.. 
