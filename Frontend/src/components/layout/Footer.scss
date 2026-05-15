@@ -1,10 +1,16 @@
 .footer {
     background-color: var(--glass-bg);
     border-top: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(25px);
     color: var(--text-main);
-    padding: 60px 0 30px;
-    margin-top: 100px;
+    padding: 60px 20px 30px;
+    position: relative;
+    z-index: 10;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .endwraper {
@@ -17,25 +23,39 @@
 .footer-section {
     b {
         display: block;
-        font-size: 1.1em;
-        margin-bottom: 20px;
+        font-size: 1.1rem;
+        margin-bottom: 25px;
         color: var(--heading-color);
+        font-weight: 700;
+        position: relative;
+        
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--primary-btn);
+        }
     }
 
     ul {
         list-style: none;
+        padding: 0;
 
         li {
             margin-bottom: 12px;
 
             a {
-                font-size: 0.95em;
+                font-size: 0.95rem;
                 color: var(--para-color);
-                transition: 0.3s;
+                transition: all 0.3s ease;
+                text-decoration: none;
 
                 &:hover {
                     color: var(--primary-btn);
-                    padding-left: 5px;
+                    padding-left: 8px;
                 }
             }
         }
@@ -44,8 +64,9 @@
 
 .footer-credit {
     padding-top: 30px;
-    font-size: 0.9em;
+    font-size: 0.85rem;
     color: var(--para-color);
     text-align: center;
-    border-top: 1px solid var(--glass-border);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    opacity: 0.8;
 }

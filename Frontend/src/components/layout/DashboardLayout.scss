@@ -1,35 +1,51 @@
 .dashboard-layout {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden; // Main layout container shouldn't scroll
 
     .dashboard-container {
         display: flex;
         flex: 1;
+        overflow: hidden; 
         position: relative;
+    }
+
+    .dashboard-main-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto; // Enables scrolling
+        overflow-x: hidden;
+        background-color: rgba(255, 255, 255, 0.02);
+        height: 100%; // Ensures it takes full height of the parent
     }
 
     .dashboard-main {
         flex: 1;
-        margin-left: 260px; // Width of sidebar
         padding: 40px;
-        padding-top: calc(85px + 40px); // Header height + content padding
-        background-color: transparent;
-        transition: margin-left 0.3s ease;
-        min-height: calc(100vh - 85px); // Ensure it takes full height minus header
+        position: relative;
     }
 
     .footer {
-        margin-top: 0;
-        z-index: 100; // Above sidebar if needed, but flexbox should handle it
+        margin-top: auto; // Push footer to bottom if content is short
+        flex-shrink: 0;
+        z-index: 10;
         position: relative;
     }
+}
+
+// Adjustments for Header being fixed
+.header {
+    flex-shrink: 0;
+    position: sticky !important; // Use sticky instead of fixed for better layout flow
+    top: 0;
 }
 
 @media (max-width: 992px) {
     .dashboard-layout {
         .dashboard-main {
-            margin-left: 70px;
+            padding: 20px;
         }
     }
 }

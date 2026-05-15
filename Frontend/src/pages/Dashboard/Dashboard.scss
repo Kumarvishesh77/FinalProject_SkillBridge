@@ -1,51 +1,96 @@
 .dashboard-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+
     .dashboard-header {
         margin-bottom: 40px;
+        animation: fadeInDown 0.6s ease;
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             color: var(--heading-color);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            font-weight: 800;
 
             span {
                 color: var(--primary-btn);
+                position: relative;
+                
+                &::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 5px;
+                    left: 0;
+                    width: 100%;
+                    height: 8px;
+                    background: rgba(59, 130, 246, 0.1);
+                    z-index: -1;
+                }
             }
         }
 
         p {
             color: var(--para-color);
-            font-size: 1.1rem;
+            font-size: 1.15rem;
+            opacity: 0.8;
         }
     }
 
     .status-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 25px;
-        margin-bottom: 50px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-bottom: 60px;
+
+        @media (max-width: 1100px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        @media (max-width: 650px) {
+            grid-template-columns: 1fr;
+        }
     }
 
     .status-card {
         background: var(--glass-bg);
         border: 1px solid var(--glass-border);
-        padding: 30px;
-        border-radius: 20px;
-        backdrop-filter: blur(20px);
-        box-shadow: var(--shadow);
+        padding: 35px;
+        border-radius: 24px;
+        backdrop-filter: blur(25px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary-btn);
+            opacity: 0.5;
+        }
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            border-color: var(--primary-btn);
+        }
 
         h3 {
-            font-size: 1rem;
+            font-size: 0.85rem;
             color: var(--para-color);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+            font-weight: 700;
         }
 
         .status-value {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.2rem;
+            font-weight: 800;
             color: var(--heading-color);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
 
             &.warning { color: #f59e0b; }
             &.info { color: var(--primary-btn); }
@@ -53,67 +98,86 @@
         }
 
         p {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--para-color);
+            line-height: 1.5;
         }
     }
 
     .quick-actions {
         h2 {
-            font-size: 1.8rem;
-            margin-bottom: 25px;
+            font-size: 2rem;
+            margin-bottom: 30px;
             color: var(--heading-color);
+            font-weight: 800;
         }
 
         .actions-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
+            gap: 30px;
         }
 
         .action-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            padding: 40px 30px;
-            border-radius: 20px;
+            padding: 50px 35px;
+            border-radius: 24px;
             text-align: center;
-            transition: 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(25px);
 
             &:hover {
-                transform: translateY(-5px);
+                transform: translateY(-10px) scale(1.02);
                 box-shadow: var(--shadow);
+                border-color: var(--primary-btn);
             }
 
             .icon {
-                font-size: 2.5rem;
-                margin-bottom: 20px;
+                font-size: 3rem;
+                margin-bottom: 25px;
+                display: inline-block;
+                padding: 20px;
+                background: rgba(59, 130, 246, 0.05);
+                border-radius: 20px;
             }
 
             h3 {
-                font-size: 1.4rem;
-                margin-bottom: 10px;
+                font-size: 1.5rem;
+                margin-bottom: 15px;
                 color: var(--heading-color);
+                font-weight: 700;
             }
 
             p {
                 color: var(--para-color);
-                margin-bottom: 25px;
-                line-height: 1.5;
+                margin-bottom: 30px;
+                line-height: 1.6;
+                font-size: 1.05rem;
             }
 
             .btn-action {
                 display: inline-block;
-                padding: 12px 25px;
+                padding: 14px 35px;
                 background: var(--primary-btn);
                 color: #fff;
-                border-radius: 8px;
-                font-weight: 600;
+                border-radius: 12px;
+                font-weight: 700;
                 transition: 0.3s;
+                text-decoration: none;
+                box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 
                 &:hover {
                     background: var(--accent);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
                 }
             }
         }
     }
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }

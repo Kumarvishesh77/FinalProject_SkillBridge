@@ -12,18 +12,21 @@ const deriveExperienceLevel = (years) => {
 
 const calculateCompletion = (profile, user) => {
     let percentage = 0;
-    // Personal info
-    if (profile.firstName && profile.lastName) percentage += 20;
-    if (profile.phone || profile.mobileNumber) percentage += 10;
-    if (profile.about) percentage += 10;
+    // Personal info (Max 30)
+    if (profile.firstName && profile.lastName) percentage += 10;
+    if (profile.mobileNumber) percentage += 5;
+    if (profile.gender) percentage += 5;
+    if (profile.dob) percentage += 5;
+    if (profile.about) percentage += 5;
     
-    // Career info
-    if (profile.roleOrStudy) percentage += 20;
+    // Career info (Max 40)
+    if (profile.currentStatus) percentage += 10;
+    if (profile.roleOrStudy) percentage += 10;
+    if (profile.targetRole) percentage += 10;
     if (profile.totalExperience !== undefined) percentage += 10;
-    if (profile.workDomain) percentage += 10;
     
-    // Skills
-    if (profile.skills && profile.skills.length > 0) percentage += 20;
+    // Skills & Education (Max 30)
+    if (profile.skills && profile.skills.length > 0) percentage += 30;
     
     return Math.min(percentage, 100);
 };
@@ -31,7 +34,7 @@ const calculateCompletion = (profile, user) => {
 exports.getProfile = async (req, res) => {
     try {
         const userId = req.user.id;
-        let profile = await Profile.findOne({ userId }).populate("userId", "username fullname email age gender role createdAt");
+        let profile = await Profile.findOne({ userId }).populate("userId", "username fullname email age gender orgId role createdAt");
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -44,11 +47,11 @@ exports.getProfile = async (req, res) => {
                 userName: user.fullname,
                 userEmail: user.email,
                 age: user.age,
-                gender: user.gender === "Others" ? "Other" : user.gender,
+                gender: user.gender,
                 mobileNumber: user.mobileNumber || "",
                 phone: user.mobileNumber || ""
             });
-            profile = await Profile.findById(profile._id).populate("userId", "username fullname email age gender role createdAt");
+            profile = await Profile.findById(profile._id).populate("userId", "username fullname email age gender orgId role createdAt");
         }
 
         const responseData = profile.toObject();
@@ -73,9 +76,12 @@ exports.updateProfile = async (req, res) => {
         // Allowed fields for Profile update
         const allowedFields = [
             "firstName", "lastName", "userName", "userEmail", "avatar", 
-            "age", "gender", "phone", "mobileNumber", "about",
+            "age", "gender", "phone", "mobileNumber", "about", "organizationName",
             "currentStatus", "roleOrStudy", "totalExperience", 
-            "workDomain", "targetDomain", "targetRole", "skills"
+            "workDomain", "targetDomain", "targetRole", "skills",
+            "dob", "nationality", "secondaryEmail", "residentialAddress",
+            "department", "reportingManager", "employmentType", "joiningDate",
+            "workLocation", "govtIdType", "idNumber", "nationalId", "workAuthorization"
         ];
 
         const updates = {};

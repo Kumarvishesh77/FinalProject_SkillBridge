@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile | SkillBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .edit-icon-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+            padding: 8px;
+            border-radius: 50%;
+        }
+        .edit-icon-btn:hover {
+            background: rgba(0, 90, 158, 0.05);
+            transform: scale(1.1);
+        }
+        .view-mode { display: block; }
+        .edit-mode { display: none; }
+        
+        .profile-data-text {
+            font-size: 1.05rem;
+            color: var(--text-main);
+            padding: 8px 0;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+        }
+        .placeholder-text {
+            color: #a19f9d;
+            font-style: italic;
+        }
+        .helper-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        .section-intro {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f3f2f1;
+        }
+        .cta-box {
+            background: #f8fafc;
+            border: 1px dashed #c8c6c4;
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .avatar-container {
+            position: relative;
+            cursor: pointer;
+        }
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .avatar-container:hover .avatar-overlay {
+            opacity: 1;
+        }
+        .avatar-overlay i {
+            font-size: 1.5rem;
+        }
+
+        /* Responsive Next Steps Section */
+        .career-next-steps {
+            margin-top: 25px;
+            padding: 18px;
+            background: #fdfdfd;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+        }
+        .badge.verified {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+    </style>
+</head>
+<body class="enterprise-theme">
+    <header class="main-header">
+        <h2 class="logo">Skill<span>Bridge</span></h2>
+        <nav class="navigation">
+            <a href="afterlogin/dashboard.html">Dashboard</a>
+            <a href="profile.html" class="active">Profile</a>
+            <a href="assessment.html" id="navAssessment" class="disabled-nav">Skill Assessment</a>
+            <a href="gap-analysis.html" id="navGapAnalysis" class="disabled-nav">Gap Analysis</a>
+            <button id="darkModeToggle" class="icon-btn">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="user-pill">
+                <span id="headerUserName">Loading...</span>
+                <img src="/profileplaceHolder.jfif" class="mini-avatar" id="headerAvatar">
+            </div>
+        </nav>
+    </header>
+
+    <main class="profile-container">
+        <!-- Sidebar -->
+        <aside class="profile-sidebar">
+            <div class="sidebar-card identity-card">
+                <div class="avatar-container" id="avatarUploadTrigger">
+                    <img src="/profileplaceHolder.jfif" id="profileAvatar" alt="User Avatar">
+                    <div class="avatar-overlay">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                <h1 id="sidebarFullName">--</h1>
+                <p id="sidebarStatus" class="text-secondary">--</p>
+                <div class="badge" id="profileStatusBadge">Incomplete</div>
+            </div>
+
+            <div class="sidebar-card completion-card">
+                <h3>Profile Completion</h3>
+                <div class="progress-radial">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" id="completionCircle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="percentage" id="completionText">0%</text>
+                    </svg>
+                </div>
+                <p class="completion-hint" id="completionHint">Complete your profile to unlock all features.</p>
+                <ul class="next-steps" id="nextStepsList"></ul>
+            </div>
+
+            <div class="sidebar-actions">
+                <button class="btn btn-danger-link" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <section class="profile-main-content">
+            <nav class="content-tabs">
+                <button class="tab-btn active" data-tab="basic">Basic Details</button>
+                <button class="tab-btn" data-tab="career">Career Status</button>
+                <button class="tab-btn" data-tab="education">Education</button>
+                <button class="tab-btn" data-tab="compliance">Compliance & Docs</button>
+            </nav>
+
+            <div class="tab-panels">
+                <!-- ... Basic Details Panel (unchanged) ... -->
+                <div class="tab-panel active" id="basic">
+                    <!-- ... existing basic content ... -->
+                    <div class="panel-header">
+                        <div>
+                            <h2>Basic Details</h2>
+                        </div>
+                        <button class="edit-icon-btn edit-toggle-btn" title="Edit Basic Details"><i class="fas fa-edit"></i></button>
+                    </div>
+                    <form class="grid-form profile-form" id="basicInfoForm">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <div class="view-mode profile-data-text" id="view-fullname">--</div>
+                            <input type="text" name="fullname" class="edit-mode" placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <div class="view-mode profile-data-text" id="view-email">--</div>
+                            <input type="email" name="email" class="edit-mode" placeholder="email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile Number</label>
+                            <div class="view-mode profile-data-text" id="view-mobileNumber">--</div>
+                            <input type="tel" name="mobileNumber" class="edit-mode" placeholder="+1 (555) 000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <div class="view-mode profile-data-text" id="view-gender">--</div>
+                            <select name="gender" class="edit-mode">
+                                <option value="" disabled selected>Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                                <option value="Prefer not to say">Prefer not to say</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <div class="view-mode profile-data-text" id="view-dob">--</div>
+                            <input type="date" name="dob" class="edit-mode">
+                        </div>
+                        <div class="form-group">
+                            <label>Nationality</label>
+                            <div class="view-mode profile-data-text" id="view-nationality">--</div>
+                            <input type="text" name="nationality" class="edit-mode" placeholder="e.g. Indian">
+                        </div>
+                        <div class="form-group">
+                            <label>Secondary Email</label>
+                            <div class="view-mode profile-data-text" id="view-secondaryEmail">--</div>
+                            <input type="email" name="secondaryEmail" class="edit-mode" placeholder="secondary@example.com">
+                        </div>
+                        <div class="form-group span-2">
+                            <label>Residential Address</label>
+                            <div class="view-mode profile-data-text" id="view-residentialAddress">--</div>
+                            <input type="text" name="residentialAddress" class="edit-mode" placeholder="Enter your full address">
+                        </div>
+                    </form>
+
+                    <div class="panel-header mt-4">
+                        <h2>System Information</h2>
+                    </div>
+                    <div class="system-grid">
+                        <div class="system-item">
+                            <span class="label" id="sysUserIdLabel">User ID / Employee ID</span>
+                            <span class="value" id="sysUserId">--</span>
+                        </div>
+                        <div class="system-item">
+                            <span class="label">Account Created</span>
+                            <span class="value" id="sysCreatedDate">--</span>
+                        </div>
+                        <div class="system-item">
+                            <span class="label">Last Updated</span>
+                            <span class="value" id="sysUpdatedDate">--</span>
+                        </div>
+                        <div class="system-item">
+                            <span class="label">User Role</span>
+                            <span class="value" id="sysUserRole">Standard User</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unified Career Status Panel with Skills -->
+                <div class="tab-panel" id="career">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Career Status</h2>
+                            <p class="text-secondary">Your professional standing, employment details, and expertise.</p>
+                        </div>
+                        <button class="edit-icon-btn edit-toggle-btn" title="Edit Career Status"><i class="fas fa-edit"></i></button>
+                    </div>
+
+                    <form class="grid-form profile-form" id="careerForm">
+                        <div class="form-group">
+                            <label>Current Status</label>
+                            <div class="view-mode profile-data-text" id="view-currentStatus">--</div>
+                            <select name="currentStatus" class="edit-mode">
+                                <option value="Beginner">Beginner</option>
+                                <option value="Student">Student</option>
+                                <option value="Working Professional">Working Professional</option>
+                                <option value="Career Switcher">Career Switcher</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Role or Area of Study</label>
+                            <div class="view-mode profile-data-text" id="view-roleOrStudy">--</div>
+                            <input type="text" name="roleOrStudy" class="edit-mode" placeholder="e.g. Analyst">
+                        </div>
+                        <div class="form-group">
+                            <label>Career Goal (Target Role)</label>
+                            <div class="view-mode profile-data-text" id="view-targetRole">--</div>
+                            <select name="targetRole" class="edit-mode">
+                                <option value="" disabled selected>Select your career goal</option>
+                                <optgroup label="Engineering Roles">
+                                    <option value="Frontend Developer">Frontend Developer</option>
+                                    <option value="Backend Developer">Backend Developer</option>
+                                    <option value="Full Stack Developer">Full Stack Developer</option>
+                                    <option value="Java Developer">Java Developer</option>
+                                </optgroup>
+                                <optgroup label="Data & Analytics Roles">
+                                    <option value="Data Analyst">Data Analyst</option>
+                                    <option value="Data Scientist">Data Scientist</option>
+                                    <option value="Business Analyst">Business Analyst</option>
+                                    <option value="Machine Learning Engineer">Machine Learning Engineer</option>
+                                </optgroup>
+                                <optgroup label="Infrastructure & Admin">
+                                    <option value="Network Engineer">Network Engineer</option>
+                                    <option value="Cloud Engineer">Cloud Engineer</option>
+                                    <option value="Microsoft 365 Admin">Microsoft 365 Admin</option>
+                                    <option value="Intune Specialist">Intune Specialist</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <div class="view-mode profile-data-text" id="view-department">--</div>
+                            <input type="text" name="department" class="edit-mode" placeholder="Product & Design">
+                        </div>
+                        <div class="form-group">
+                            <label>Reporting Manager</label>
+                            <div class="view-mode profile-data-text" id="view-reportingManager">--</div>
+                            <input type="text" name="reportingManager" class="edit-mode" placeholder="Manager Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Employment Type</label>
+                            <div class="view-mode profile-data-text" id="view-employmentType">--</div>
+                            <select name="employmentType" class="edit-mode">
+                                <option value="Permanent">Permanent</option>
+                                <option value="Contract">Contract</option>
+                                <option value="Intern">Intern</option>
+                                <option value="Part-time">Part-time</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Joining Date</label>
+                            <div class="view-mode profile-data-text" id="view-joiningDate">--</div>
+                            <input type="date" name="joiningDate" class="edit-mode">
+                        </div>
+                        <div class="form-group">
+                            <label>Work Location</label>
+                            <div class="view-mode profile-data-text" id="view-workLocation">--</div>
+                            <input type="text" name="workLocation" class="edit-mode" placeholder="Seattle, WA">
+                        </div>
+                        <div class="form-group">
+                            <label>Total Experience (Years)</label>
+                            <div class="view-mode profile-data-text" id="view-totalExperience">0</div>
+                            <input type="number" name="totalExperience" class="edit-mode" step="0.1" min="0" placeholder="0">
+                        </div>
+                    </form>
+
+                    <div class="skills-section mt-4">
+                        <hr style="opacity: 0.1; margin-bottom: 20px;">
+                        <h3>Skills & Expertise</h3>
+                        <div id="skills-empty-state" class="cta-box view-mode" style="display:none;">
+                            <p>Add at least one skill to enable assessment.</p>
+                        </div>
+                        <div class="tag-input-container mt-2">
+                            <div class="tags" id="skillsTags"></div>
+                            <div class="skill-entry-row mt-2 edit-mode" id="skillEntryRow" style="display:none; gap: 10px;">
+                                <input type="text" id="skillInput" placeholder="Add a skill" style="flex: 2;">
+                                <select id="proficiencyInput" style="flex: 1;">
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Advanced">Advanced</option>
+                                </select>
+                                <button type="button" class="btn btn-primary" id="addSkillBtn">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Education Panel -->
+                <div class="tab-panel" id="education">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Education</h2>
+                            <p class="text-secondary">Your academic history and qualifications.</p>
+                        </div>
+                        <button class="edit-icon-btn edit-toggle-btn" title="Edit Education"><i class="fas fa-edit"></i></button>
+                    </div>
+
+                    <div id="education-list" class="view-mode">
+                        <!-- Education items will be injected here -->
+                    </div>
+
+                    <div id="education-empty-state" class="cta-box view-mode" style="display:none;">
+                        <p>No education records added yet.</p>
+                        <button class="btn btn-outline mt-2" onclick="document.querySelector('#education .edit-toggle-btn').click()">Add Education</button>
+                    </div>
+
+                    <div class="edit-mode education-entry-section">
+                        <div id="education-edit-list">
+                            <!-- Editable education items will be injected here -->
+                        </div>
+                        <div class="skill-entry-row mt-3">
+                            <h4>Add New Education</h4>
+                            <form id="newEducationForm" class="grid-form mt-2">
+                                <div class="form-group">
+                                    <label>Degree / Qualification</label>
+                                    <input type="text" name="degree" placeholder="e.g. Bachelor of Technology">
+                                </div>
+                                <div class="form-group">
+                                    <label>Institution / School</label>
+                                    <input type="text" name="institution" placeholder="e.g. Stanford University">
+                                </div>
+                                <div class="form-group">
+                                    <label>University / Board</label>
+                                    <input type="text" name="university" placeholder="e.g. Stanford">
+                                </div>
+                                <div class="form-group">
+                                    <label>Graduation Year</label>
+                                    <input type="number" name="graduationYear" placeholder="2024">
+                                </div>
+                                <div class="form-group">
+                                    <label>Grade / CGPA / Percentage</label>
+                                    <input type="text" name="grade" placeholder="e.g. 9.5 CGPA">
+                                </div>
+                                <div class="form-group d-flex align-items-end">
+                                    <button type="button" class="btn btn-primary w-100" id="addEducationBtn">Add Record</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compliance & Docs Panel -->
+                <div class="tab-panel" id="compliance">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Compliance & Docs</h2>
+                            <p class="text-secondary">Identification and verification details (Read-only).</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-form profile-form">
+                        <div class="form-group">
+                            <label>Govt ID Type</label>
+                            <div class="profile-data-text" id="view-govtIdType">--</div>
+                        </div>
+                        <div class="form-group">
+                            <label>ID Number</label>
+                            <div class="profile-data-text" id="view-idNumber">--</div>
+                        </div>
+                        <div class="form-group">
+                            <label>National ID (PAN/SSN)</label>
+                            <div class="profile-data-text" id="view-nationalId">--</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Work Authorization</label>
+                            <div class="profile-data-text" id="view-workAuthorization">--</div>
+                        </div>
+                        <div class="form-group span-2">
+                            <label>Background Verification Status</label>
+                            <div class="view-mode profile-data-text">
+                                <span class="badge" id="view-bgVerificationStatus">Not Started</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h3>Uploaded Documents</h3>
+                        <div class="cta-box mt-2">
+                            <p class="text-secondary"><i class="fas fa-file-invoice"></i> No documents have been verified or uploaded yet.</p>
+                            <p class="helper-text">Documents uploaded via the Enterprise portal will appear here after verification.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Form Actions -->
+            <div class="form-footer-actions edit-mode" id="globalFormActions">
+                <button class="btn btn-secondary" id="cancelChangesBtn">Cancel</button>
+                <button class="btn btn-success" id="saveChangesBtn">Save Profile</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="profile.js"></script>
+</body>
+</html>

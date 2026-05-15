@@ -19,16 +19,18 @@ app.use(cookieParser());
 
 // 0.5 Explicit Root Route Handler (Prioritized)
 app.get("/", (req, res) => {
-    res.sendFile(path.join(path.resolve(__dirname, "../../Frontend/src"), "index.html"));
+    res.sendFile(path.join(path.resolve(__dirname, "../../Frontend"), "index.html"));
 });
 
 // Define paths
-const frontendSrcPath = path.resolve(__dirname, "../../Frontend/src");
+const frontendPath = path.resolve(__dirname, "../../Frontend");
+const frontendSrcPath = path.resolve(__dirname, "../../Frontend/src"); // For other potential src assets
 const rootPath = path.resolve(__dirname, "../../");
 
-console.log("Serving frontend from:", frontendSrcPath);
+console.log("Serving frontend from:", frontendPath);
 
-// 1. Static file serving - serving the frontend files from the 'src' directory
+// 1. Static file serving - serving from Frontend root where index.html is
+app.use(express.static(frontendPath));
 app.use(express.static(frontendSrcPath));
 
 app.get("/health", (req, res) => {
@@ -57,10 +59,10 @@ app.use((req, res) => {
         return res.status(404).json({ message: "API route not found" });
     }
     
-    const indexPath = path.join(frontendSrcPath, "index.html");
+    const indexPath = path.join(frontendPath, "index.html");
     res.sendFile(indexPath, (err) => {
         if (err) {
-            res.status(404).send(`Frontend not found. Ensure 'index.html' exists in: ${frontendSrcPath}`);
+            res.status(404).send(`Frontend not found. Ensure 'index.html' exists in: ${frontendPath}`);
         }
     });
 });

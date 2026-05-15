@@ -25,6 +25,9 @@ const userSchema = new mongoose.Schema({
     gender: {
         type: String,
     },
+    orgId: {
+        type: String,
+    },
     role: {
         type: String,
         enum: ['user', 'artist'],

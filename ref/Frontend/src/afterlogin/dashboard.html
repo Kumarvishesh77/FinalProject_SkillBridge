@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkillBridge | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+ 
+<body>
+ 
+<!-- ================= TOP NAVBAR ================= -->
+<header class="topbar">
+    <div class="logo" onclick="goHome()" style="cursor: pointer;">Skill<span>Bridge</span></div>
+    <div class="user-actions">
+        <span>Welcome, User</span>
+        <button id="theme-toggle" class="theme-btn">
+            <i class="fas fa-moon"></i>
+        </button>
+        <button class="logout-btn">Logout</button>
+    </div>
+</header>
+ 
+<!-- ================= DASHBOARD LAYOUT ================= -->
+<div class="dashboard">
+ 
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar">
+        <ul>
+            <li class="active" onclick="location.href='dashboard.html'">Dashboard</li>
+            <li onclick="goProfile()">Profile</li>
+            <li onclick="goAssessment()">Skill Assessment</li>
+            <li onclick="goGapAnalysis()">Skill Gap Analysis</li>
+            <li onclick="goRoadmap()">Learning Roadmap</li>
+            <li class="logout">Logout</li>
+        </ul>
+    </aside>
+ 
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="main-content">
+ 
+        <!-- Welcome Section -->
+        <section class="welcome-card">
+            <h1>Welcome to <span>SkillBridge</span> Dashboard</h1>
+            <p>
+                Manage your profile, analyze your skill gaps,
+                and follow your personalized learning roadmap to
+                achieve your career goals efficiently.
+            </p>
+        </section>
+
+        <!-- Status Cards -->        <section class="status-cards">
+            <div class="status-card">
+                <h3>Profile Status</h3>
+                <p>Not Completed</p>
+            </div>
+ 
+            <div class="status-card">
+                <h3>Skills Assessed</h3>
+                <p>0 Skills</p>
+            </div>
+ 
+            <div class="status-card">
+                <h3>Target Role</h3>
+                <p>Not Selected</p>
+            </div>
+        </section>
+ 
+        <!-- Quick Actions -->
+        <section class="action-cards">
+            <div class="action-card">
+                <h3>Create / Update Profile</h3>
+                <p>Add your current role and experience.</p>
+                <button onclick="goProfile()">Go</button>
+            </div>
+ 
+            <div class="action-card">
+                <h3>Start Skill Assessment</h3>
+                <p>Evaluate your skills level.</p>
+                <button onclick="goAssessment()">Start</button>
+            </div>
+ 
+            <div class="action-card">
+                <h3>View Learning Roadmap</h3>
+                <p>See your career growth path.</p>
+                <button onclick="goRoadmap()">View</button>
+            </div>
+        </section>
+ 
+    </main>
+</div>
+ 
+<script src="dashboard.js"></script>
+</body>
+</html>

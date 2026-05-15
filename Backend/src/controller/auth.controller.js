@@ -12,14 +12,17 @@ const isStrongPassword = (password) => {
 
 async function registerUser(req, res) {
     try {
-        console.log("Registration Request Body:", req.body);
-        const { fullname, email, password, age, gender, role = "user" } = req.body;
+        console.log("--- REGISTRATION START ---");
+        console.log("Body:", { ...req.body, password: "[REDACTED]" });
+        const { fullname, email, password, age, gender, orgId, role = "user" } = req.body;
 
         if (!fullname || !email || !password) {
+            console.log("Missing fields");
             return res.status(400).json({ message: "All fields are required" });
         }
 
         if (!isStrongPassword(password)) {
+            console.log("Weak password");
             return res.status(400).json({ 
                 message: "Password does not meet complexity requirements: min. 8 chars, including A-Z, a-z, 0-9, and @$!%." 
             });
@@ -27,16 +30,20 @@ async function registerUser(req, res) {
 
         const username = fullname;
 
+        console.log("Checking if user exists...");
         const userAlreadyExist = await userModel.findOne({
             $or: [{ username }, { email }]
         });
 
         if (userAlreadyExist) {
+            console.log("User already exists:", email);
             return res.status(409).json({ message: "User already exists" });
         }
 
+        console.log("Hashing password...");
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        console.log("Creating user document...");
         const user = new userModel({
             username,
             fullname,
@@ -44,23 +51,29 @@ async function registerUser(req, res) {
             password: hashedPassword,
             age,
             gender,
+            orgId,
             role
         });
 
         await user.save();
+        console.log("User saved. ID:", user._id);
 
-        // Auto-create Profile with registration data including Age and Gender
+        console.log("Creating profile document...");
+        // Auto-create Profile with registration data
         await profileModel.create({
             userId: user._id,
             userName: user.fullname,
             userEmail: user.email,
             age: user.age,
             gender: user.gender,
+            organizationName: orgId,
             avatar: "/profileplaceHolder.jfif",
             profileStatus: "Incomplete",
             completionPercentage: 30 
         });
+        console.log("Profile created.");
 
+        console.log("Signing token...");
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.JWT_SECRET || "default_secret"
@@ -68,25 +81,29 @@ async function registerUser(req, res) {
 
         res.cookie("token", token, { httpOnly: true });
 
+        console.log("Registration successful.");
         return res.status(201).json({
             message: "User register successful",
             user: {
-                userid: user._id,
+                _id: user._id,
                 username: user.username,
                 fullname: user.fullname,
                 email: user.email,
+                gender: user.gender,
+                orgId: user.orgId,
                 role: user.role
             }
         });
     } catch (error) {
-        console.error("Register Error:", error);
-        return res.status(500).json({ message: "Internal server error" });
+        console.error("--- REGISTER CRITICAL ERROR ---");
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error: " + error.message });
     }
 }
 
 async function loginUser(req, res) {
     try {
-        console.log("Login Request Body:", req.body);
+        console.log("Login Request Body:", { ...req.body, password: "[REDACTED]" });
         const { email, password } = req.body;
 
         if (!email || !password) {
@@ -114,9 +131,12 @@ async function loginUser(req, res) {
         return res.status(200).json({
             message: "Login successful",
             user: {
+                _id: user._id,
                 username: user.username,
                 fullname: user.fullname,
                 email: user.email,
+                gender: user.gender,
+                orgId: user.orgId,
                 role: user.role
             }
         });

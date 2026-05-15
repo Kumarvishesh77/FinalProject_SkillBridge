@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gap Analysis - SkillBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .analysis-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(12px);
+            max-width: 900px;
+            margin: 120px auto 40px auto;
+            box-shadow: var(--shadow);
+        }
+        .gap-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            transition: transform 0.2s ease;
+        }
+        .gap-item:hover {
+            transform: scale(1.02);
+            background: rgba(255,255,255,0.1);
+        }
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-complete { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .status-gap { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .status-improvement { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        
+        .level-text { font-size: 0.85em; opacity: 0.7; color: var(--para-color); }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+        .section-header i { color: var(--primary-btn); font-size: 1.4em; }
+        .section-header h3 { font-size: 1.3em; color: var(--heading-color); }
+
+        .role-badge {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-btn);
+            padding: 12px 25px;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 1.1em;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            margin-bottom: 10px;
+        }
+
+        .summary-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            line-height: 1.6;
+            color: var(--para-color);
+        }
+        .summary-box.success {
+            background: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .priority-list {
+            padding-left: 20px;
+        }
+        .priority-list li {
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.1);
+            border-top: 5px solid var(--primary-btn);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .placeholder-text {
+            text-align: center;
+            opacity: 0.6;
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2 class="logo" onclick="location.href='index.html'" style="cursor: pointer;">Skill<span>Bridge</span></h2>
+        <nav class="navigation">
+            <a href="afterlogin/dashboard.html">Dashboard</a>
+            <a href="profile.html">Profile</a>
+            <a href="assessment.html">Assessments</a>
+            <a href="roadmap.html">Roadmap</a>
+            <button id="darkModeToggle" class="theme-btn" style="background:none; border:none; color:inherit; cursor:pointer;">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="btnLogin-popup" onclick="logout()">Logout</button>
+        </nav>
+    </header>
+
+    <div class="analysis-card">
+        <h1>Skill <span>Gap Analysis</span></h1>
+        <p style="margin-bottom: 30px;">Strategic insights into your professional growth path.</p>
+        
+        <div id="role-status-container" style="text-align: center; margin-bottom: 40px;">
+            <!-- Fetched automatically from profile -->
+        </div>
+
+        <div id="analysis-results" style="display: none;">
+            
+            <div class="section-header">
+                <i class="fas fa-award"></i>
+                <h3>Your Strengths</h3>
+            </div>
+            <div id="strengths-list"></div>
+
+            <div class="section-header">
+                <i class="fas fa-chart-line"></i>
+                <h3>Skill Gaps & Opportunities</h3>
+            </div>
+            <div id="gaps-list"></div>
+
+            <div class="section-header">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Improvement Summary</h3>
+            </div>
+            <div id="improvement-summary"></div>
+            
+            <div style="margin-top: 50px; text-align: center;">
+                <button onclick="location.href='roadmap.html'" class="start">View Personalized Roadmap</button>
+            </div>
+        </div>
+
+        <div id="no-data-msg" style="display: none; text-align: center; padding: 40px;">
+            <!-- Dynamic content based on empty state -->
+        </div>
+    </div>
+
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="roleData.js"></script>
+    <script src="gap-analysis.js"></script>
+    <script>
+        // Theme logic
+        const toggleBtn = document.getElementById('darkModeToggle');
+        const body = document.body;
+        const updateThemeUI = (isDark) => {
+            body.classList.toggle('dark-mode', isDark);
+            if (toggleBtn) toggleBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        };
+        const savedTheme = localStorage.getItem('theme');
+        updateThemeUI(savedTheme === 'dark');
+        if (toggleBtn) toggleBtn.addEventListener('click', () => {
+            const isDark = body.classList.contains('dark-mode');
+            const newTheme = !isDark;
+            localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+            updateThemeUI(newTheme);
+        });
+    </script>
+</body>
+</html>

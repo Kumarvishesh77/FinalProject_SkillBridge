@@ -23,6 +23,31 @@ const profileSchema = new mongoose.Schema({
     // Basic Details
     age: { type: Number },
     gender: { type: String },
+    
+    // Enterprise & Detailed Info
+    organizationName: { type: String, default: "" },
+    dob: { type: Date },
+    nationality: { type: String, default: "" },
+    secondaryEmail: { type: String, default: "" },
+    residentialAddress: { type: String, default: "" },
+    department: { type: String, default: "" },
+    reportingManager: { type: String, default: "" },
+    employmentType: {
+        type: String,
+        enum: ["Permanent", "Contract", "Intern", "Part-time"],
+        default: "Permanent"
+    },
+    joiningDate: { type: Date },
+    workLocation: { type: String, default: "" },
+    govtIdType: { type: String, default: "" },
+    idNumber: { type: String, default: "" },
+    nationalId: { type: String, default: "" },
+    workAuthorization: { type: String, default: "" },
+    backgroundVerificationStatus: {
+        type: String,
+        enum: ["Not Started", "In Progress", "Verified", "Rejected"],
+        default: "Not Started"
+    },
 
     // Career Information (Mapped from Frontend)
     currentStatus: {
@@ -51,16 +76,21 @@ const profileSchema = new mongoose.Schema({
         default: "Incomplete"
     },
     completionPercentage: { type: Number, default: 0 },
+assessments: [{
+    skill: { type: String },
+    level: { type: String },
+    score: { type: Number },
+    passed: { type: Boolean },
+    date: { type: Date, default: Date.now }
+}],
 
-    assessments: [{
-        skill: { type: String },
-        level: { type: String },
-        score: { type: Number },
-        passed: { type: Boolean },
-        date: { type: Date, default: Date.now }
-    }],
+gapAnalysis: {
+    type: Object,
+    default: null
+},
 
-    lastProfileUpdated: { type: Date, default: Date.now }
+lastProfileUpdated: { type: Date, default: Date.now }
+
 }, { timestamps: true, strict: false });
 
 module.exports = mongoose.model("Profile", profileSchema);

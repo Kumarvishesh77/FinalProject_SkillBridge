@@ -1,16 +1,14 @@
 .sidebar {
     width: 260px;
-    height: calc(100vh - 85px);
-    position: fixed;
-    top: 85px;
-    left: 0;
+    height: 100%; // Fill container
     background: var(--glass-bg);
     border-right: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(25px);
     padding: 30px 15px;
     overflow-y: auto;
     z-index: 90;
-    // Remove pointer-events or anything that might interfere
+    flex-shrink: 0;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     .sidebar-nav {
         display: flex;
@@ -22,48 +20,64 @@
         display: flex;
         align-items: center;
         gap: 15px;
-        padding: 12px 15px;
-        border-radius: 10px;
+        padding: 12px 18px;
+        border-radius: 12px;
         color: var(--text-main);
         font-weight: 500;
-        transition: 0.3s;
+        transition: all 0.3s;
+        text-decoration: none;
 
         &:hover {
-            background: rgba(59, 130, 246, 0.1);
+            background: rgba(59, 130, 246, 0.08);
             color: var(--primary-btn);
+            transform: translateX(5px);
         }
 
         &.active {
             background: var(--primary-btn);
             color: #fff;
-            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 15px rgba(59, 130, 246, 0.2);
+
+            &:hover { transform: none; }
         }
 
         .icon {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+        }
+
+        .label {
+            font-size: 0.95rem;
+            white-space: nowrap;
         }
     }
 
     .nav-section {
-        margin-top: 25px;
+        margin-top: 30px;
+        margin-bottom: 10px;
 
         .section-title {
             display: block;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: var(--para-color);
-            margin-bottom: 10px;
-            padding-left: 15px;
-            font-weight: 700;
+            margin-bottom: 12px;
+            padding-left: 18px;
+            font-weight: 800;
+            opacity: 0.6;
         }
     }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
     .sidebar {
-        width: 70px;
-        
+        width: 80px;
+        padding: 30px 10px;
+
         .label, .section-title {
             display: none;
         }
@@ -71,6 +85,16 @@
         .nav-item {
             justify-content: center;
             padding: 15px 0;
+            transform: none;
+
+            &:hover { transform: scale(1.1); }
         }
     }
 }
+
+@media (max-width: 600px) {
+    .sidebar {
+        display: none; // On very small screens, use a burger menu if implemented
+    }
+}
+

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Roadmap - SkillBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .roadmap-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(12px);
+            max-width: 900px;
+            margin: 120px auto 40px auto;
+            box-shadow: var(--shadow);
+        }
+        .skill-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
+        }
+        .week-block {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+        .practice-box {
+            border-left: 4px solid var(--accent);
+            padding: 10px 20px;
+            background: rgba(37, 99, 235, 0.1);
+            font-style: italic;
+        }
+        .roadmap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2 class="logo" onclick="location.href='index.html'" style="cursor: pointer;">Skill<span>Bridge</span></h2>
+        <nav class="navigation">
+            <a href="afterlogin/dashboard.html">Dashboard</a>
+            <a href="profile.html">Profile</a>
+            <a href="assessment.html">Assessments</a>
+            <a href="gap-analysis.html">Gap Analysis</a>
+            <button id="darkModeToggle" class="theme-btn" style="background:none; border:none; color:inherit; cursor:pointer;">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="btnLogin-popup" onclick="logout()">Logout</button>
+        </nav>
+    </header>
+
+
+    <div class="roadmap-card">
+        <div class="roadmap-header">
+            <h1>Your Learning <span>Roadmap</span></h1>
+            <button onclick="window.print()" class="btn" style="padding: 8px 15px; font-size: 0.8em;"><i class="fas fa-print"></i> Print</button>
+        </div>
+        <p id="roadmap-subtitle">Customized growth plan for your goals.</p>
+        
+        <div id="roadmap-content" style="margin-top: 30px;">
+            <!-- Roadmap content injected here -->
+        </div>
+
+        <div id="no-roadmap-msg" style="display: none; text-align: center; padding: 40px;">
+            <p>Please complete a <strong>Gap Analysis</strong> first to identify which skills you need to improve.</p>
+            <button onclick="location.href='gap-analysis.html'" class="btn">Go to Gap Analysis</button>
+        </div>
+    </div>
+
+    <script src="roleData.js"></script>
+    <script src="roadmapData.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        function generateRoadmap() {
+            const role = localStorage.getItem('target_role');
+            const assessmentResults = JSON.parse(localStorage.getItem('assessment_results') || '{}');
+            const content = document.getElementById('roadmap-content');
+            const noMsg = document.getElementById('no-roadmap-msg');
+            const subtitle = document.getElementById('roadmap-subtitle');
+
+            if (!role) {
+                content.style.display = 'none';
+                noMsg.style.display = 'block';
+                return;
+            }
+
+            subtitle.innerText = `Growth plan for becoming a ${role}`;
+            const requirements = roleRequirements[role];
+            content.innerHTML = '';
+
+            const levels = ["None", "Beginner", "Intermediate", "Advanced"];
+
+            let hasGaps = false;
+
+            for (const skill in requirements) {
+                const targetLevel = requirements[skill];
+                const userData = assessmentResults[skill] || { currentLevel: "None" };
+                const userLevel = userData.currentLevel;
+
+                const targetIdx = levels.indexOf(targetLevel);
+                const userIdx = levels.indexOf(userLevel);
+
+                if (userIdx < targetIdx) {
+                    hasGaps = true;
+                    // Determine which levels to include in roadmap
+                    // If user is "None", start from Beginner. If user is "Beginner", start from Intermediate.
+                    const skillSection = document.createElement('div');
+                    skillSection.className = 'skill-section';
+                    skillSection.innerHTML = `<h3><i class="fas fa-book-reader"></i> ${skill}</h3>`;
+
+                    for (let i = userIdx + 1; i <= targetIdx; i++) {
+                        const levelToLearn = levels[i];
+                        const data = roadmapData[skill] ? roadmapData[skill][levelToLearn] : null;
+
+                        if (data) {
+                            const block = document.createElement('div');
+                            block.className = 'week-block';
+                            block.innerHTML = `
+                                <strong>Level: ${levelToLearn}</strong>
+                                <ul style="margin-top: 10px;">
+                                    ${data["Week 1"].map(topic => `<li>${topic}</li>`).join('')}
+                                </ul>
+                                <div class="practice-box">
+                                    <strong>Practice:</strong> ${data.Practice}
+                                </div>
+                            `;
+                            skillSection.appendChild(block);
+                        }
+                    }
+                    content.appendChild(skillSection);
+                }
+            }
+
+            if (!hasGaps) {
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <h3>🎉 Congratulations!</h3>
+                        <p>You have already met all the skill requirements for the <strong>${role}</strong> role.</p>
+                        <button onclick="location.href='gap-analysis.html'" class="btn">Choose a More Advanced Role</button>
+                    </div>
+                `;
+            }
+        }
+
+        generateRoadmap();
+
+        // Theme logic
+        const toggleBtn = document.getElementById('darkModeToggle');
+        const body = document.body;
+        const updateThemeUI = (isDark) => {
+            body.classList.toggle('dark-mode', isDark);
+            if (toggleBtn) toggleBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        };
+        const savedTheme = localStorage.getItem('theme');
+        updateThemeUI(savedTheme === 'dark');
+        if (toggleBtn) toggleBtn.addEventListener('click', () => {
+            const isDark = body.classList.contains('dark-mode');
+            const newTheme = !isDark;
+            localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+            updateThemeUI(newTheme);
+        });
+    </script>
+</body>
+</html>

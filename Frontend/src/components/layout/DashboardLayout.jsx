@@ -11,11 +11,13 @@ const DashboardLayout = () => {
             <Header />
             <div className="dashboard-container">
                 <Sidebar />
-                <main className="dashboard-main">
-                    <Outlet />
-                </main>
+                <div className="dashboard-main-wrapper">
+                    <main className="dashboard-main">
+                        <Outlet />
+                    </main>
+                    <Footer />
+                </div>
             </div>
-            <Footer />
         </div>
     );
 };

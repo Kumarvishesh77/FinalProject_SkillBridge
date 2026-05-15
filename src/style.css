@@ -42,7 +42,7 @@ body{
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: url('/Background4.jpg.jfif') no-repeat;
+    background: url('Background4.jpg.jfif') no-repeat;
     background-size: cover;
     background-position: center;
 }

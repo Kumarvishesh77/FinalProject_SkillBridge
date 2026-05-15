@@ -1,4 +1,5 @@
-import { useContext } from "react";
+import { useContext, useCallback } from "react";
+
 import { ProfileContext } from "../profile.context";
 import { getProfile, updateProfile } from "../services/profile.api";
 
@@ -10,7 +11,7 @@ export const useProfile = () => {
 
     const { profile, setProfile, profileLoading, setProfileLoading } = context;
 
-    const fetchProfile = async () => {
+    const fetchProfile = useCallback(async () => {
         setProfileLoading(true);
         try {
             const data = await getProfile();
@@ -22,9 +23,9 @@ export const useProfile = () => {
         } finally {
             setProfileLoading(false);
         }
-    };
+    }, [setProfile, setProfileLoading]);
 
-    const handleUpdateProfile = async (profileData) => {
+    const handleUpdateProfile = useCallback(async (profileData) => {
         setProfileLoading(true);
         try {
             const data = await updateProfile(profileData);
@@ -39,7 +40,7 @@ export const useProfile = () => {
         } finally {
             setProfileLoading(false);
         }
-    };
+    }, [setProfile, setProfileLoading]);
 
     return { profile, profileLoading, fetchProfile, handleUpdateProfile };
 };
